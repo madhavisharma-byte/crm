@@ -1,29 +1,89 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+// Updated role enum to ['admin', 'manager', 'staff']
+const ROLE_ENUM = ["admin", "manager", "staff"];
+
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true },
-    password: { type: String },
+    // name in frontend: 'fullName'
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    // email (unique)
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    // phone (optional)
+    phone: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    // companyName (optional)
+    companyName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    // password (required for local signup)
+    password: {
+      type: String,
+    },
+    // role: 'admin', 'manager', or 'staff'
     role: {
       type: String,
-      enum: ["admin", "manager", "user"],
-      default: "user",
+      enum: ROLE_ENUM,
+      default: "staff",
     },
-    provider: { type: String, enum: ["local", "google"], default: "local" },
+    // provider: "local" (default), "google"
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+    // If user registered by Google, to link Google account
+    googleId: { 
+      type: String,
+      default: null,
+    },
+    // Terms accepted (we can store timestamp for auditing) - not required by data model
+    termsAcceptedAt: {
+      type: Date,
+    }
+    ,
+    // Fields for password reset via OTP
+    resetOtp: {
+      type: String,
+      default: null,
+    },
+    resetOtpExpiry: {
+      type: Date,
+      default: null,
+    }
   },
   { timestamps: true }
 );
 
-userSchema.pre("save", async function hashPassword(next) {
-  if (!this.isModified("password") || !this.password) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+// ✅ Modern async mongoose pre-save hook: remove 'next', just use async/await
+userSchema.pre("save", async function () {
+  if (!this.isModified("password") || !this.password) return;
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (err) {
+    throw err;
+  }
 });
 
-userSchema.methods.matchPassword = async function matchPassword(entered) {
+// Instance method to check password
+userSchema.methods.matchPassword = async function (entered) {
   if (!this.password) return false;
   return bcrypt.compare(entered, this.password);
 };
@@ -31,4 +91,3 @@ userSchema.methods.matchPassword = async function matchPassword(entered) {
 const User = mongoose.model("User", userSchema);
 
 export default User;
-

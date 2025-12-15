@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api.js';
+import { useAuth } from '../state/AuthContext.jsx';
 import LeftPanel from '../components/LoginLeftPannel.jsx';
+
+// Backend expects: fullName, email, password, confirmPassword, phone, companyName, role, termsAccepted
 
 const REGISTER_PAGE_TITLE = "Create Your Account";
 const REGISTER_PAGE_SUBTITLE = "Join thousands of businesses already using our platform";
@@ -57,9 +61,9 @@ const PASSWORD_FIELDS = [
 ];
 
 const ROLE_OPTIONS = [
-  { value: 'Viewer', label: 'Viewer' },
-  { value: 'Editor', label: 'Editor' },
-  { value: 'Admin', label: 'Admin' }
+  { value: 'admin', label: 'Admin' },
+  { value: 'manager', label: 'Manager' },
+  { value: 'staff', label: 'Staff' }
 ];
 
 const TERMS_TEXT = (
@@ -71,9 +75,11 @@ const TERMS_TEXT = (
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  // Optimize: Put form state in a single object (ready for further API wiring)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -85,19 +91,145 @@ const RegisterPage = () => {
     termsAccepted: false
   });
 
-  // Handle input changes for all fields
+  const [formErrors, setFormErrors] = useState(null);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value
     }));
+    if (formErrors) setFormErrors(null); // clear errors on input change
   };
 
-  // Submit - future: connect to backend
+  /** Map backend express-validator and legacy errors to fields as appropriate for UX.
+   * - Express-validator: [{msg, param, path}]
+   * - Unexpected: {message}
+   */
+  const parseServerErrors = (err) => {
+    // Normalize server errors into a field map or message.
+    if (err?.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+      const fieldMap = {};
+      err.response.data.errors.forEach(e => {
+        const key = e.param || e.path || 'general';
+        fieldMap[key] = e.msg || e.message || 'Invalid field';
+      });
+      return fieldMap;
+    }
+
+    if (typeof err?.response?.data?.message === 'string') {
+      return err.response.data.message;
+    }
+
+    if (typeof err?.message === 'string') {
+      return err.message;
+    }
+
+    return 'Registration failed';
+  };
+
+  // Validate required fields before submit, then post to backend, handle success/error
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Form validation & API integration
+    setFormErrors(null);
+
+    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword) {
+      setFormErrors('Please fill the required fields');
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setFormErrors('Passwords do not match');
+      return;
+    }
+    if (!formData.termsAccepted) {
+      setFormErrors('Please accept Terms of Service');
+      return;
+    }
+
+    (async () => {
+      try {
+        // Always use fullName on payload (backend accepts either, prefers fullName)
+        const payload = {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          companyName: formData.companyName,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          role: formData.role,
+          termsAccepted: formData.termsAccepted,
+        };
+        const { data } = await api.post('/auth/register', payload);
+        login(data.user, data.token);
+        navigate('/');
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Register error', err);
+        setFormErrors(parseServerErrors(err));
+      }
+    })();
+  };
+
+  // Load Google Sign-In script and setup
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return;
+
+    const loadScript = () => {
+      if (document.getElementById("google-id-script-register")) return;
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.id = "google-id-script-register";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+      script.onload = () => {
+        /* global google */
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: async (response) => {
+              try {
+                setGoogleLoading(true);
+                const idToken = response.credential;
+                const { data } = await api.post("/auth/google", { idToken });
+                login(data.user, data.token);
+                navigate("/dashboard");
+              } catch (err) {
+                // eslint-disable-next-line no-console
+                console.error("Google signup failed", err);
+                setFormErrors(err.response?.data?.message || "Google signup failed");
+              } finally {
+                setGoogleLoading(false);
+              }
+            },
+          });
+          const container = document.getElementById("google-button-container-register");
+          if (container) {
+            window.google.accounts.id.renderButton(container, {
+              theme: "outline",
+              size: "large",
+              width: "100%",
+            });
+          }
+        }
+      };
+    };
+
+    loadScript();
+  }, [GOOGLE_CLIENT_ID, login, navigate]);
+
+  // Gets a field-level error message (or null), for input highlighting and error text
+  const getFieldError = (field) => {
+    if (!formErrors) return null;
+    if (typeof formErrors === 'string') return null;
+    return formErrors[field] || null;
+  };
+
+  // Gets a general (form-level) error message (string), or null
+  const getFormGeneralError = () => {
+    if (!formErrors) return null;
+    if (typeof formErrors === 'string') return formErrors;
+    return null;
   };
 
   return (
@@ -135,6 +267,13 @@ const RegisterPage = () => {
           {/* Form */}
           <form className="space-y-4" onSubmit={handleSubmit}>
 
+            {/* General error message */}
+            {getFormGeneralError() && (
+              <div className="w-full bg-red-100 text-red-600 border border-red-300 rounded py-2 px-3 text-xs mb-2 text-center">
+                {getFormGeneralError()}
+              </div>
+            )}
+
             {/* Main Fields */}
             {FORM_FIELDS.map(field => (
               <div key={field.key}>
@@ -149,9 +288,17 @@ const RegisterPage = () => {
                   required={field.required}
                   value={formData[field.key]}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+                  className={
+                    "w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm " +
+                    (getFieldError(field.key)
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-gray-300 focus:border-blue-500")
+                  }
                   autoComplete="off"
                 />
+                {getFieldError(field.key) && (
+                  <div className="text-xs text-red-500 mt-1">{getFieldError(field.key)}</div>
+                )}
               </div>
             ))}
 
@@ -174,7 +321,12 @@ const RegisterPage = () => {
                     required={field.required}
                     value={formData[field.key]}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+                    className={
+                      "w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm " +
+                      (getFieldError(field.key)
+                        ? "border-red-400 focus:border-red-500"
+                        : "border-gray-300 focus:border-blue-500")
+                    }
                     autoComplete="off"
                   />
                   <button
@@ -186,6 +338,9 @@ const RegisterPage = () => {
                       ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+                {getFieldError(field.key) && (
+                  <div className="text-xs text-red-500 mt-1">{getFieldError(field.key)}</div>
+                )}
               </div>
             ))}
 
@@ -211,6 +366,9 @@ const RegisterPage = () => {
                   <ChevronDown size={14} />
                 </div>
               </div>
+              {getFieldError('role') && (
+                <div className="text-xs text-red-500 mt-1">{getFieldError('role')}</div>
+              )}
             </div>
 
             {/* Terms Checkbox */}
@@ -228,15 +386,35 @@ const RegisterPage = () => {
                 {TERMS_TEXT}
               </label>
             </div>
+            {getFieldError('termsAccepted') && (
+              <div className="text-xs text-red-500 mt-1 ml-1">{getFieldError('termsAccepted')}</div>
+            )}
 
             {/* Submit Button */}
             <button
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors shadow-md mt-4"
               type="submit"
+              disabled={googleLoading}
             >
               Create Account
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-400">Or continue with</span>
+            </div>
+          </div>
+
+          {/* Google Button */}
+          <div id="google-button-container-register" className="w-full" />
+          {!GOOGLE_CLIENT_ID && (
+            <p className="text-xs text-center text-gray-400 mt-4">* Google signup not configured</p>
+          )}
 
         </div>
       </div>

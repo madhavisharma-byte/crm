@@ -16,11 +16,24 @@ const DashboardHeader = ({ profile }) => {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Logout functionality can be expanded with context if desired
+    // Logout will also clear localStorage and relevant info from sessionStorage
     const handleLogout = () => {
         setDropdownOpen(false);
-        // Add your logout logic if integrating auth context
+
+        // Remove tokens and user data (update these key names if your app uses different ones)
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+            // Optionally, for added security, you could remove specific keys instead of clear()
+            // localStorage.removeItem('token');
+            // localStorage.removeItem('profile');
+        } catch (e) {
+            // Ignore errors (e.g., private mode)
+        }
+        
         navigate("/login", { replace: true });
+        // Optional: force reload to clear any lingering memory state and prevent dashboard access
+        window.location.reload();
     };
 
     // Use provided profile or fall back to default

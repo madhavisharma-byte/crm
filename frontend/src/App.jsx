@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Inventory from "./pages/Inventory.jsx";
 import Orders from "./pages/Orders.jsx";
@@ -30,62 +31,17 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/dashboard"
-            element={
-                <Dashboard />
-            }
-          />
-          <Route
-            path="/inventory"
-            element={
-                <Inventory />
-            }
-          />
-          <Route
-            path="/orders"
-            element={
-                <Orders />
-
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <ReportsPage />
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <SettingsPage />
-            }
-          />
-          <Route
-            path="/settings/users"
-            element={
-              <SettingsUserPage />
-            }
-          />
-          <Route
-            path="/settings/company"
-            element={
-              <SettingsCompanyPage />
-            }
-          />
-          <Route
-            path="/settings/notifications"
-            element={
-              <SettingsNotifications />
-            }
-          />
-          <Route
-            path="/settings/shipping"
-            element={
-              <SettingsShipping />
-            }
-          />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
+          <Route path="/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+          <Route path="/reports" element={<PrivateRoute><ReportsPage /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+          <Route path="/settings/users" element={<PrivateRoute><SettingsUserPage /></PrivateRoute>} />
+          <Route path="/settings/company" element={<PrivateRoute><SettingsCompanyPage /></PrivateRoute>} />
+          <Route path="/settings/notifications" element={<PrivateRoute><SettingsNotifications /></PrivateRoute>} />
+          <Route path="/settings/shipping" element={<PrivateRoute><SettingsShipping /></PrivateRoute>} />
           <Route
             path="/reports/sales"
             element={<ReportsPage activeTab="Sales Report" />}

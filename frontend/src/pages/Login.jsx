@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../utils/api.js";
 import { useAuth } from "../state/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +21,11 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,18 +33,86 @@ const AdminLogin = () => {
     setError("");
     try {
       const { data } = await api.post("/auth/login", form);
-      if (data.user.role !== "admin") {
-        setError("Admin role required");
-      } else {
-        login(data.user, data.token);
-        navigate("/admin/dashboard");
-      }
+      // On success navigate to dashboard
+      login(data.user, data.token);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
+
+  // Google Identity Services: load and render button
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) {
+      // eslint-disable-next-line no-console
+      console.warn("VITE_GOOGLE_CLIENT_ID not configured");
+      return;
+    }
+
+    const loadScript = () => {
+      if (document.getElementById("google-id-script")) return;
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.id = "google-id-script";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+      script.onload = () => {
+        /* global google */
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+          // eslint-disable-next-line no-console
+          console.log("Google Identity Services loaded, initializing...");
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: async (response) => {
+              try {
+                setGoogleLoading(true);
+                // eslint-disable-next-line no-console
+                console.log("Google token received, sending to backend...");
+                const idToken = response.credential;
+                const { data } = await api.post("/auth/google", { idToken });
+                // eslint-disable-next-line no-console
+                console.log("Login successful", data);
+                login(data.user, data.token);
+                navigate("/dashboard");
+              } catch (err) {
+                // eslint-disable-next-line no-console
+                console.error("Google login failed", err);
+                setError(err.response?.data?.message || "Google login failed");
+              } finally {
+                setGoogleLoading(false);
+              }
+            },
+          });
+          // render button into container
+          const container = document.getElementById("google-button-container");
+          if (container) {
+            // eslint-disable-next-line no-console
+            console.log("Rendering Google button...");
+            window.google.accounts.id.renderButton(container, {
+              theme: "outline",
+              size: "large",
+              width: "100%",
+            });
+          } else {
+            // eslint-disable-next-line no-console
+            console.warn("Google button container not found");
+          }
+        } else {
+          // eslint-disable-next-line no-console
+          console.error("Google Identity Services not available");
+        }
+      };
+      script.onerror = () => {
+        // eslint-disable-next-line no-console
+        console.error("Failed to load Google Identity Services script");
+      };
+    };
+
+    loadScript();
+  }, [GOOGLE_CLIENT_ID, login, navigate]);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent">
@@ -130,9 +200,13 @@ const AdminLogin = () => {
                 />
                 Remember me
               </label>
-              <span className="text-blue-600 font-medium opacity-60 cursor-not-allowed">
+              <button
+                type="button"
+                onClick={() => navigate('/reset-password')}
+                className="text-blue-600 font-medium hover:underline"
+              >
                 Forgot password?
-              </span>
+              </button>
             </div>
 
             <button
@@ -162,15 +236,20 @@ const AdminLogin = () => {
           </div>
 
           {/* Google Button */}
-          <button
-            type="button"
-            className="w-full bg-white border border-gray-200 text-gray-700 font-medium py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-            disabled
-          >
-            <GoogleIcon />
-            Google
-          </button>
-          <p className="text-xs text-center text-gray-400 mt-4">* Google login coming soon</p>
+          <div id="google-button-container" className="w-full" />
+          {!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+            <>
+              <button
+                type="button"
+                className="w-full bg-white border border-gray-200 text-gray-700 font-medium py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                disabled
+              >
+                <GoogleIcon />
+                Google
+              </button>
+              <p className="text-xs text-center text-gray-400 mt-4">* Google login not configured</p>
+            </>
+          )}
         </div>
       </div>
     </div>
