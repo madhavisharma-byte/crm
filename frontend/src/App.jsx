@@ -63,7 +63,7 @@ import DiscountGroupItem from "./components/GSTConfigurations/DiscountGroupItem.
 import ListingsPage from "./components/Products/Products/Listings.jsx";
 import ProductsPage from "./components/Products/Products/Products.jsx";
 import RollupSKUPage from "./components/Products/Products/RollupSku.jsx";
-import CategoriesPage from "./components/Products/Products/categories.jsx";
+import CategoriesPage from "./components/Products/Products/Categories.jsx";
 import KittingPage from "./components/Products/Products/Kit.jsx";
 import InventoryPage from "./components/Products/Inventory/Inventory.jsx";
 import ChannelInventoryPage from "./components/Products/Inventory/ChannelInventory.jsx";
