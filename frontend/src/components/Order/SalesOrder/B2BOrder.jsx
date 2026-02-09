@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Filter, Upload, Download, Plus, ChevronDown } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar"; 
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../(website)/Header"; 
+import DashboardHeader from "../../(website)/Header.jsx";
 
 /* =======================
    CONSTANT DATA
