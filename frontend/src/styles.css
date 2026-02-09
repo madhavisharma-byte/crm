@@ -25,6 +25,77 @@
     --shadow: rgba(0, 0, 0, 0.6);
   }
 
+  /* Make common Tailwind utility classes follow our CSS variables in dark mode
+     so components using utility classes will still adapt without edits. */
+  .dark .bg-white,
+  .dark .bg-gray-50 {
+    background-color: var(--card) !important;
+  }
+
+  .dark .bg-gray-100,
+  .dark .bg-gray-200,
+  .dark .bg-gray-50 {
+    background-color: rgba(255,255,255,0.02) !important;
+  }
+
+  .dark .text-black,
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700 {
+    color: var(--text) !important;
+  }
+
+  .dark .border-gray-200,
+  .dark .border-gray-300,
+  .dark .border {
+    border-color: var(--border) !important;
+  }
+
+  .dark .shadow,
+  .dark .shadow-lg,
+  .dark .shadow-md {
+    box-shadow: 0 10px 30px var(--shadow) !important;
+  }
+
+  .dark .hover\:bg-gray-100:hover,
+  .dark .hover\:bg-gray-50:hover {
+    background-color: rgba(255,255,255,0.02) !important;
+  }
+
+  .dark .bg-white\/50 {
+    background-color: rgba(255,255,255,0.06) !important;
+  }
+
+  /* Map common slate/gray text & background utility classes to CSS variables in dark mode */
+  .dark .text-slate-700,
+  .dark .text-slate-600,
+  .dark .text-slate-500,
+  .dark .text-slate-400,
+  .dark .text-gray-700,
+  .dark .text-gray-600,
+  .dark .text-gray-500,
+  .dark .text-gray-400 {
+    color: var(--text) !important;
+  }
+
+  .dark .bg-slate-50,
+  .dark .bg-slate-100,
+  .dark .bg-gray-50,
+  .dark .bg-white {
+    background-color: var(--card) !important;
+  }
+
+  .dark .bg-slate-400,
+  .dark .bg-gray-400 {
+    background-color: var(--border) !important;
+  }
+
+  .dark .border-blue-100,
+  .dark .border-slate-100,
+  .dark .border-gray-100 {
+    border-color: var(--border) !important;
+  }
+
   body {
     margin: 0;
     background-color: var(--bg);

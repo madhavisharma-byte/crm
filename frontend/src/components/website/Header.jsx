@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../state/AuthContext";
+import { useTheme } from "../../state/ThemeContext.jsx";
 import api from "../../utils/api";
 
 // Constants
@@ -155,15 +156,8 @@ const DashboardHeader = () => {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [orderOpen, setOrderOpen] = useState(false);
     const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(() => {
-        if (typeof window !== "undefined") {
-            return (
-                localStorage.getItem("theme") === "dark" ||
-                document.documentElement.classList.contains("dark")
-            );
-        }
-        return false;
-    });
+    const { theme, toggleTheme } = useTheme();
+    const darkMode = theme === "dark";
 
     // Profile State
     const [userProfile, setUserProfile] = useState(null);
@@ -245,15 +239,7 @@ const DashboardHeader = () => {
     );
 
     // Effects
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        }
-    }, [darkMode]);
+    // Theme handled globally by ThemeProvider; local UI reads `theme` from context.
 
     useEffect(() => {
         if (!orderOpen) return;
@@ -531,7 +517,7 @@ const DashboardHeader = () => {
                                                 type="button"
                                                 className={`w-9 h-5 rounded-full relative transition-colors duration-200 focus:outline-none ${darkMode ? "bg-blue-600" : "bg-gray-200"
                                                     }`}
-                                                onClick={() => setDarkMode((prev) => !prev)}
+                                                onClick={toggleTheme}
                                             >
                                                 <span
                                                     className={`block h-3.5 w-3.5 bg-white rounded-full shadow-sm absolute top-0.5 left-0.5 transition-transform duration-200 ${darkMode ? "translate-x-4" : ""

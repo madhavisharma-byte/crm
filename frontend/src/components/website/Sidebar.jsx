@@ -348,22 +348,22 @@ const Sidebar = () => {
         {/* 2. EXPANDED PANEL - fixed for lg+ */}
         <div
           className={`
-            bg-[#eef4ff] transition-all duration-300 border-r border-blue-100 flex flex-col h-full
+            bg-white transition-all duration-300 border-r flex flex-col h-full
             ${isExpanded ? 'w-64' : 'w-0 overflow-hidden'}
             lg:fixed lg:left-16 lg:top-0 lg:h-screen
           `}
-          style={{ zIndex: 40 }}
+          style={{ zIndex: 40, borderColor: 'var(--border)', backgroundColor: 'var(--card)' }}
         >
           <div className="p-6 flex flex-col h-full">
             <div className="mb-6 px-1">
-              <h2 className="text-[17px] font-bold text-slate-700 leading-tight">Super Admin</h2>
-              <p className="text-xs text-slate-400 font-medium">Inventory Hub</p>
+              <h2 className="text-[17px] font-bold leading-tight" style={{ color: 'var(--text)' }}>Super Admin</h2>
+              <p className="text-xs font-medium" style={{ color: 'var(--text)', opacity: 0.7 }}>Inventory Hub</p>
             </div>
 
             <div className="flex-1 overflow-y-auto no-scrollbar">
               {activeMenu && (
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300">
-                  <h3 className="text-[15px] font-semibold text-[#303e67] mb-6 px-1">
+                  <h3 className="text-[15px] font-semibold mb-6 px-1" style={{ color: 'var(--text)' }}>
                     {activeMenu.text}
                   </h3>
 
@@ -376,7 +376,7 @@ const Sidebar = () => {
                               onClick={() => toggleSubMenu(sub.text)}
                               className="flex items-center justify-between py-2 px-1 cursor-pointer group select-none"
                             >
-                              <span className="text-[14px] font-medium text-slate-600 group-hover:text-blue-600">
+                              <span className="text-[14px] font-medium" style={{ color: 'var(--text)' }}>
                                 {sub.text}
                               </span>
                               {openSubMenus[sub.text] ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
@@ -391,8 +391,8 @@ const Sidebar = () => {
                                       onClick={() => child.path && navigate(child.path)}
                                       className="flex items-center gap-4 py-2 px-3 cursor-pointer group"
                                     >
-                                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]' : 'bg-slate-400'}`} />
-                                      <span className={`text-[14px] font-medium ${isActive ? 'text-blue-600' : 'text-slate-600 group-hover:text-blue-500'}`}>
+                                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]' : 'bg-slate-400'}`} style={!isActive ? { backgroundColor: 'var(--border)' } : {}} />
+                                      <span className={`text-[14px] font-medium`} style={{ color: isActive ? undefined : 'var(--text)' }}>
                                         {child.text}
                                       </span>
                                     </div>
@@ -406,8 +406,8 @@ const Sidebar = () => {
                             onClick={() => sub.path && navigate(sub.path)}
                             className="flex items-center gap-4 py-2 px-3 cursor-pointer group"
                           >
-                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActivePath(sub.path) ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]' : 'bg-slate-400'}`} />
-                            <span className={`text-[14px] font-medium ${isActivePath(sub.path) ? 'text-blue-600' : 'text-slate-600 group-hover:text-blue-500'}`}>
+                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActivePath(sub.path) ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]' : 'bg-slate-400'}`} style={!isActivePath(sub.path) ? { backgroundColor: 'var(--border)' } : {}} />
+                            <span className={`text-[14px] font-medium`} style={{ color: isActivePath(sub.path) ? undefined : 'var(--text)' }}>
                               {sub.text}
                             </span>
                           </div>
@@ -421,7 +421,8 @@ const Sidebar = () => {
 
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-auto p-2 bg-white rounded-lg border border-blue-50 text-slate-400 hover:text-blue-600 hover:shadow-md transition-all self-end"
+              className="mt-auto p-2 rounded-lg border hover:shadow-md transition-all self-end"
+              style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--text)' }}
             >
               <Menu size={18} />
             </button>
@@ -432,7 +433,7 @@ const Sidebar = () => {
       {/* Right side content area: margin-left for both sidebars, scrollable */}
       <div
         className={`
-          flex-1 bg-white h-screen overflow-y-auto
+          flex-1 h-screen overflow-y-auto
           ${isExpanded
             ? 'lg:ml-80'   // 16 (icon rail) + 64 (expanded panel) = 80
             : 'lg:ml-16'   // 16 (icon rail only)
@@ -442,6 +443,7 @@ const Sidebar = () => {
         `}
         style={{
           minWidth: 0,
+          backgroundColor: 'var(--bg)'
         }}
       >
         {/* 
