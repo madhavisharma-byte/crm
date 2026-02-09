@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Bell } from "lucide-react";
 import Sidebar from "../components/(website)/Sidebar";
-import Header from "../components/(website)/header";
+import Header from "../components/(website)/Header";
 import SettingsHeader from "../components/SettingsHeader";
 
 const SettingsNotifications = () => {

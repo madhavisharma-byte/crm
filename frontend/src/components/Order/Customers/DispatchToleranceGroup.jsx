@@ -2,7 +2,7 @@
 
 import React from "react";
 import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/header";
+import DashboardHeader from "../../(website)/Header";
 
 /* =======================
    CONSTANT DATA

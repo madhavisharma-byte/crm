@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Upload, Download, Plus, Filter, Package, AlertTriangle, TrendingDown, BarChart3, MoreHorizontal, Box, Layers, LineChart, Loader } from 'lucide-react';
 import Sidebar from '../components/(website)/Sidebar';
-import Header from '../components/(website)/header';
+import Header from '../components/(website)/Header';
 import AddInventory from '../components/AddInventory';
 import api from '../utils/api';
 

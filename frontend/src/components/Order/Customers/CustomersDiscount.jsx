@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Plus, Upload, Download } from "lucide-react";
 import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/header";
+import DashboardHeader from "../../(website)/Header";
 
 /* =======================
    CONSTANT DATA

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { RefreshCcw, BarChart3 } from "lucide-react";
 
 // ✅ IMPORT EXISTING LAYOUT COMPONENTS
-import DashboardHeader from "../(website)/header";
+import DashboardHeader from "../(website)/Header";
 import Sidebar from "../(website)/Sidebar";
 
 // --------------------

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
 import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/header";
+import DashboardHeader from "../../(website)/Header";
 
 // --- Constants ---
 const TABS = [

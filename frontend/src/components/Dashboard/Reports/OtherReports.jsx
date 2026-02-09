@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/header";
+import DashboardHeader from "../../(website)/Header";
 
 /* =======================
    CONSTANT DATA

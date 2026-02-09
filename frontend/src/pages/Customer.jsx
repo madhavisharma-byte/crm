@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Filter, Plus } from 'lucide-react';
 import Sidebar from '../components/(website)/Sidebar';
-import Header from '../components/(website)/header';
+import Header from '../components/(website)/Header';
 import AddCustomer from '../components/AddCustomer';
 import AddDiscountCustomer from '../components/AddDiscountCustomer'; // Import AddDiscountCustomer
 

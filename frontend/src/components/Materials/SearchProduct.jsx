@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import Sidebar from '../(website)/Sidebar';
-import DashboardHeader from '../(website)/header';
+import DashboardHeader from '../(website)/Header';
 
 // --- Page Data / Constants ---
 const PRODUCT_CATEGORIES = [

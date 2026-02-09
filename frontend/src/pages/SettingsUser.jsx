@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Users, Plus, Check, X } from "lucide-react";
 import Sidebar from "../components/(website)/Sidebar";
-import Header from "../components/(website)/header";
+import Header from "../components/(website)/Header";
 import SettingsHeader from "../components/SettingsHeader";
 
 // --- Team members and role permissions data: Will be fetched from backend API in future ---

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '../../(website)/Sidebar';
-import Header from '../../(website)/header';
+import Header from '../../(website)/Header';
 import { Plus, Filter, Upload, Download, Search as SearchIcon } from 'lucide-react';
 import CreateVendor from './CreateVendor';
 

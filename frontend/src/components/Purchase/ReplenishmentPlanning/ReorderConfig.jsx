@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '../../(website)/Sidebar';
-import DashboardHeader from '../../(website)/header';
+import DashboardHeader from '../../(website)/Header';
 import { Search, Filter, Upload, Download, Plus } from 'lucide-react';
 import ReorderConfigModal from './ReorderConfigModal';
 

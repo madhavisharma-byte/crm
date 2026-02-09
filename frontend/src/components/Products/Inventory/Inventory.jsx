@@ -10,7 +10,7 @@ import {
   X
 } from "lucide-react";
 import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/header";
+import DashboardHeader from "../../(website)/Header";
 import AddInventoryModal from "./AddInventoryModal";
 import ScanInventoryModal from "./ScanInventoryModal";
 

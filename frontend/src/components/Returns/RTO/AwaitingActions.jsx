@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/header";
+import DashboardHeader from "../../(website)/Header";
 
 /* === TABLE HEADERS === */
 const FILTER_TABS = [
