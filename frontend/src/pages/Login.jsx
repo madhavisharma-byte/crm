@@ -33,9 +33,8 @@ const AdminLogin = () => {
     setError("");
     try {
       const { data } = await api.post("/auth/login", form);
-      // On success navigate to dashboard
       login(data.user, data.token);
-      navigate("/dashboard");
+      navigate("/dashboard/overview");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -43,14 +42,11 @@ const AdminLogin = () => {
     }
   };
 
-  // Google Identity Services: load and render button
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) {
-      // eslint-disable-next-line no-console
       console.warn("VITE_GOOGLE_CLIENT_ID not configured");
       return;
     }
-
     const loadScript = () => {
       if (document.getElementById("google-id-script")) return;
       const script = document.createElement("script");
@@ -60,53 +56,34 @@ const AdminLogin = () => {
       script.defer = true;
       document.body.appendChild(script);
       script.onload = () => {
-        /* global google */
         if (window.google && window.google.accounts && window.google.accounts.id) {
-          // eslint-disable-next-line no-console
-          console.log("Google Identity Services loaded, initializing...");
           window.google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
             callback: async (response) => {
               try {
                 setGoogleLoading(true);
-                // eslint-disable-next-line no-console
-                console.log("Google token received, sending to backend...");
                 const idToken = response.credential;
                 const { data } = await api.post("/auth/google", { idToken });
-                // eslint-disable-next-line no-console
-                console.log("Login successful", data);
                 login(data.user, data.token);
                 navigate("/dashboard");
               } catch (err) {
-                // eslint-disable-next-line no-console
-                console.error("Google login failed", err);
                 setError(err.response?.data?.message || "Google login failed");
               } finally {
                 setGoogleLoading(false);
               }
             },
           });
-          // render button into container
           const container = document.getElementById("google-button-container");
           if (container) {
-            // eslint-disable-next-line no-console
-            console.log("Rendering Google button...");
             window.google.accounts.id.renderButton(container, {
               theme: "outline",
               size: "large",
               width: "100%",
             });
-          } else {
-            // eslint-disable-next-line no-console
-            console.warn("Google button container not found");
           }
-        } else {
-          // eslint-disable-next-line no-console
-          console.error("Google Identity Services not available");
         }
       };
       script.onerror = () => {
-        // eslint-disable-next-line no-console
         console.error("Failed to load Google Identity Services script");
       };
     };
@@ -115,141 +92,198 @@ const AdminLogin = () => {
   }, [GOOGLE_CLIENT_ID, login, navigate]);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent">
-      {/* Main Container */}
-      <div className="flex flex-col md:flex-row w-full max-w-[1000px] h-auto md:h-[650px] bg-white rounded-xl overflow-hidden shadow-2xl">
+    <div className="min-h-screen w-full flex items-center justify-center p-0 md:p-0 bg-transparent">
+      <div
+        className="flex flex-col md:flex-row w-full h-screen max-w-none md:max-w-screen-2xl"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        {/* Left Panel */}
+        <div className="md:w-1/2 w-full h-1/2 md:h-full">
+          <LeftPanel />
+        </div>
 
-        {/* Left Side - Blue Panel (migrated to separate component) */}
-        <LeftPanel />
-
-        {/* Right Side - Form Panel */}
-        <div className="w-full md:w-1/2 bg-white p-8 md:p-12 flex flex-col justify-center">
-
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-1">Welcome Back</h2>
-            <p className="text-gray-500 text-sm mb-6">Sign in to access your dashboard</p>
-            <div className="flex w-full mb-6">
-              <button
-                type="button"
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-l-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+        {/* Right Panel */}
+        <div
+          className="md:w-1/2 w-full h-full flex items-center justify-center"
+          style={{
+            backgroundColor: "var(--card)",
+            minHeight: "100vh",
+          }}
+        >
+          <div className="w-full max-w-md p-8 md:p-12 mx-auto flex flex-col justify-center">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-1" style={{ color: "var(--text)" }}>
+                Welcome Back
+              </h2>
+              <p
+                className="text-sm mb-6"
+                style={{ color: "var(--text)", opacity: 0.6 }}
               >
-                Sign In
-              </button>
-              <button
-                type="button"
-                className="flex-1 bg-gray-100 text-gray-500 font-semibold py-2 rounded-r-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                onClick={() => navigate("/register")}
-              >
-                Register
-              </button>
-            </div>
-          </div>
-
-          {/* Form */}
-          <form className="space-y-5" onSubmit={handleSubmit}>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Email or Username <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email or username"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
-                value={form.email}
-                required
-                autoComplete="username"
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Password <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
-                  value={form.password}
-                  required
-                  autoComplete="current-password"
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                />
+                Sign in to access your dashboard
+              </p>
+              <div className="flex w-full mb-6">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  tabIndex={-1}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-l-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 font-semibold py-2 rounded-r-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: "var(--bg)",
+                    color: "var(--text)",
+                    opacity: 0.7,
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                  }}
+                  onClick={() => navigate("/register")}
+                >
+                  Register
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center text-gray-600 cursor-pointer">
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1"
+                  style={{ color: "var(--text)", opacity: 0.8 }}
+                >
+                  Email or Username <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe((v) => !v)}
+                  type="email"
+                  placeholder="Enter your email or username"
+                  className="w-full px-4 py-3 rounded-lg border focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+                  style={{
+                    backgroundColor: "var(--bg)",
+                    borderColor: "var(--border)",
+                    color: "var(--text)",
+                  }}
+                  value={form.email}
+                  required
+                  autoComplete="username"
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
-                Remember me
-              </label>
+              </div>
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1"
+                  style={{ color: "var(--text)", opacity: 0.8 }}
+                >
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="w-full px-4 py-3 rounded-lg border focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+                    style={{
+                      backgroundColor: "var(--bg)",
+                      borderColor: "var(--border)",
+                      color: "var(--text)",
+                    }}
+                    value={form.password}
+                    required
+                    autoComplete="current-password"
+                    onChange={(e) =>
+                      setForm({ ...form, password: e.target.value })
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <label
+                  className="flex items-center cursor-pointer"
+                  style={{ color: "var(--text)", opacity: 0.7 }}
+                >
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 mr-2"
+                    style={{ borderColor: "var(--border)" }}
+                    checked={rememberMe}
+                    onChange={() => setRememberMe((v) => !v)}
+                  />
+                  Remember me
+                </label>
+                <button
+                  type="button"
+                  onClick={() => navigate('/reset-password')}
+                  className="text-blue-600 font-medium hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
               <button
-                type="button"
-                onClick={() => navigate('/reset-password')}
-                className="text-blue-600 font-medium hover:underline"
+                type="submit"
+                disabled={loading}
+                className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors shadow-md ${
+                  loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
               >
-                Forgot password?
+                {loading ? "Signing In..." : "Sign In"}
               </button>
+              {error && (
+                <p className="text-center text-sm text-red-500 font-semibold mt-1">
+                  {error}
+                </p>
+              )}
+            </form>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t" style={{ borderColor: "var(--border)" }}></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span
+                  className="px-2"
+                  style={{
+                    backgroundColor: "var(--card)",
+                    color: "var(--text)",
+                    opacity: 0.5,
+                  }}
+                >
+                  Or continue with
+                </span>
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors shadow-md ${
-                loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </button>
-
-            {error && (
-              <p className="text-center text-sm text-red-500 font-semibold mt-1">{error}</p>
+            <div id="google-button-container" className="w-full" />
+            {!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+              <>
+                <button
+                  type="button"
+                  className="w-full border font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                  style={{
+                    backgroundColor: "var(--card)",
+                    borderColor: "var(--border)",
+                    color: "var(--text)",
+                  }}
+                  disabled
+                >
+                  <GoogleIcon />
+                  Google
+                </button>
+                <p className="text-xs text-center text-gray-400 mt-4">
+                  * Google login not configured
+                </p>
+              </>
             )}
-
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-400">Or continue with</span>
-            </div>
           </div>
-
-          {/* Google Button */}
-          <div id="google-button-container" className="w-full" />
-          {!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
-            <>
-              <button
-                type="button"
-                className="w-full bg-white border border-gray-200 text-gray-700 font-medium py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                disabled
-              >
-                <GoogleIcon />
-                Google
-              </button>
-              <p className="text-xs text-center text-gray-400 mt-4">* Google login not configured</p>
-            </>
-          )}
         </div>
       </div>
     </div>

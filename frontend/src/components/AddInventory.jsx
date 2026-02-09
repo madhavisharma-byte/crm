@@ -14,13 +14,13 @@ export default function AddInventory({ open, onClose, onSuccess }) {
     sellingPrice: "",
     costPrice: "",
     stockQty: "",
-    paymentMethod: [], // Now allows multiple selections
+    paymentMethod: [],
     amazonSku: "",
     flipkartSku: "",
     meeshoSku: "",
     otherSku: "",
     description: "",
-    // media: null, // to handle uploaded file in real app
+    // media: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,13 +41,14 @@ export default function AddInventory({ open, onClose, onSuccess }) {
     setError("");
   }
 
+  // --- handleSubmit (Updated as per requirements) ---
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // Validate required fields
+      // 1. Validation
       if (
         !formData.productName ||
         !formData.sku ||
@@ -56,33 +57,32 @@ export default function AddInventory({ open, onClose, onSuccess }) {
         !formData.paymentMethod ||
         formData.paymentMethod.length === 0
       ) {
-        setError("Please fill in all required fields.");
+        setError("Please fill in all required fields marked with *");
         setLoading(false);
         return;
       }
 
-      // Prepare inventory data for API
+      // 2. Construct Payload (exactly per controller's expectations)
       const inventoryData = {
         sku: formData.sku,
         title: formData.productName,
-        // platform removed
         quantity: parseInt(formData.stockQty) || 0,
-        price: parseFloat(formData.sellingPrice) || 0,
+        price: parseFloat(formData.sellingPrice) || 0, // "Selling Price"
         metadata: {
           category: formData.category,
+          mrp: parseFloat(formData.price) || 0, // price is MRP
+          costPrice: parseFloat(formData.costPrice) || 0,
           customerGroup: formData.customerGroup,
-          mrp: formData.price,
-          costPrice: formData.costPrice,
-          paymentMethod: formData.paymentMethod, // Array
+          paymentMethod: formData.paymentMethod,
           amazonSku: formData.amazonSku,
           flipkartSku: formData.flipkartSku,
           meeshoSku: formData.meeshoSku,
           otherSku: formData.otherSku,
           description: formData.description,
-        },
+        }
       };
 
-      // Call API to save inventory item
+      // 3. API Call
       const response = await api.post("/inventory", inventoryData);
 
       if (response.data && response.data.item) {
@@ -92,7 +92,6 @@ export default function AddInventory({ open, onClose, onSuccess }) {
           sku: "",
           category: "",
           customerGroup: "",
-          // platform removed
           price: "",
           sellingPrice: "",
           costPrice: "",
@@ -105,19 +104,16 @@ export default function AddInventory({ open, onClose, onSuccess }) {
           description: "",
         });
 
-        // Call success callback
-        if (onSuccess) {
-          onSuccess(response.data.item);
-        }
-
-        // Close form
-        if (onClose) {
-          onClose();
-        }
+        if (onSuccess) onSuccess(response.data.item);
+        if (onClose) onClose();
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to save inventory item. Please try again.");
       console.error("Error saving inventory:", err);
+      // Handle express-validator array of errors, or fallback to known string
+      const msg = err.response?.data?.errors
+        ? err.response.data.errors[0].msg
+        : (err.response?.data?.message || "Failed to save inventory item.");
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -126,16 +122,16 @@ export default function AddInventory({ open, onClose, onSuccess }) {
   // Form content
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col">
+      <div className="rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col" style={{ backgroundColor: "var(--card)" }}>
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-start">
+        <div className="px-6 py-4 border-b flex justify-between items-start" style={{ borderColor: "var(--border)" }}>
           <div className="flex gap-3">
             <div className="mt-1 bg-blue-50 p-2 rounded-md text-blue-600">
               <Plus size={16} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-800">Add New Inventory Item</h2>
-              <p className="text-sm text-gray-500">Fill in the details below to add a new product to inventory.</p>
+              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>Add New Inventory Item</h2>
+              <p className="text-sm" style={{ color: "var(--text)", opacity: 0.6 }}>Fill in the details below to add a new product to inventory.</p>
             </div>
           </div>
           <button
@@ -158,7 +154,7 @@ export default function AddInventory({ open, onClose, onSuccess }) {
         {/* Scrollable Form Area */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
           <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-            <div className="col-span-2 bg-white">
+            <div className="col-span-2">
               {/* Product Details */}
               <div className="flex items-center mb-7">
                 <div className="p-2 rounded bg-blue-50 text-blue-600 mr-2">
@@ -176,7 +172,7 @@ export default function AddInventory({ open, onClose, onSuccess }) {
                     />
                   </svg>
                 </div>
-                <h2 className="text-lg font-bold text-gray-800">Product Details</h2>
+                <h2 className="text-lg font-bold" style={{ color: "var(--text)" }}>Product Details</h2>
               </div>
               <div className="space-y-9">
                 {/* SECTION: Basic Details */}
@@ -326,10 +322,10 @@ export default function AddInventory({ open, onClose, onSuccess }) {
               </div>
             </div>
             {/* Media & Description */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg shadow-sm sticky top-16 p-8 flex flex-col gap-6">
+            <div className="border rounded-lg shadow-sm sticky top-16 p-8 flex flex-col gap-6" style={{ backgroundColor: "rgba(0,0,0,0.03)", borderColor: "var(--border)" }}>
               <SectionHeader title="Media & Description" />
-              <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center bg-gray-50">
-                <div className="bg-gray-200 text-gray-500 rounded p-2 mb-3">
+              <div className="border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.02)", borderColor: "var(--border)" }}>
+                <div className="rounded p-2 mb-3" style={{ backgroundColor: "var(--bg)", color: "var(--text)", opacity: 0.7 }}>
                   <svg width={28} height={28} fill="none" viewBox="0 0 24 24">
                     <path
                       d="M21 16V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8"
@@ -347,12 +343,13 @@ export default function AddInventory({ open, onClose, onSuccess }) {
                     />
                   </svg>
                 </div>
-                <p className="text-xs text-gray-500 font-medium mb-3">
+                <p className="text-xs font-medium mb-3" style={{ color: "var(--text)", opacity: 0.5 }}>
                   No product media added yet
                 </p>
                 <button
                   type="button"
-                  className="bg-white border border-gray-300 text-gray-600 px-4 py-1.5 rounded text-xs hover:bg-gray-50 transition"
+                  className="border px-4 py-1.5 rounded text-xs transition hover:opacity-80"
+                  style={{ backgroundColor: "var(--card)", borderColor: "var(--border)", color: "var(--text)" }}
                 >
                   Upload Media
                 </button>
@@ -362,7 +359,8 @@ export default function AddInventory({ open, onClose, onSuccess }) {
                   Description
                 </label>
                 <textarea
-                  className="w-full border border-gray-200 rounded-lg p-3 min-h-[100px] bg-gray-50 text-sm placeholder-gray-500 focus:ring-0 resize-none focus:outline-none"
+                  className="w-full border rounded-lg p-3 min-h-[100px] text-sm placeholder:opacity-50 focus:ring-0 resize-none focus:outline-none"
+                  style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
                   placeholder="Write Description"
                   value={formData.description}
                   onChange={(e) => handleInput("description", e.target.value)}
@@ -381,7 +379,8 @@ export default function AddInventory({ open, onClose, onSuccess }) {
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="px-4 py-2 border rounded-md text-sm font-medium transition-colors disabled:opacity-50"
+              style={{ borderColor: "var(--border)", color: "var(--text)" }}
             >
               Cancel
             </button>
@@ -419,15 +418,15 @@ function InputGroup({
 }) {
   return (
     <div className={"flex flex-col gap-1.5 " + className}>
-      <label className="text-xs font-semibold text-gray-700 mb-1">
+      <label className="text-xs font-semibold mb-1" style={{ color: "var(--text)", opacity: 0.8 }}>
         {label}
         {required && <span className="text-red-500">*</span>}
       </label>
       <input
         type={type}
-        className={`w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 ${
-          disabled ? "bg-gray-50 cursor-not-allowed" : "text-gray-700"
-        }`}
+        className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 ${disabled ? "cursor-not-allowed opacity-50" : ""
+          }`}
+        style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
         required={required}
         disabled={disabled}
         value={value || ""}
@@ -449,12 +448,13 @@ function MultiSelectGroup({
 }) {
   return (
     <div className={"flex flex-col gap-1.5 " + className}>
-      <label className="text-xs font-semibold text-gray-700 mb-1">
+      <label className="text-xs font-semibold mb-1" style={{ color: "var(--text)", opacity: 0.8 }}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
         multiple
-        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-gray-700 bg-white"
+        className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+        style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
         value={value}
         onChange={onChange}
         required={required}
@@ -481,11 +481,12 @@ function SelectGroup({
 }) {
   return (
     <div className={"flex flex-col gap-1.5 " + className}>
-      <label className="text-xs font-semibold text-gray-700 mb-1">
+      <label className="text-xs font-semibold mb-1" style={{ color: "var(--text)", opacity: 0.8 }}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
-        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-gray-700 bg-white"
+        className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+        style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
         value={value || ""}
         onChange={onChange}
         required={required}
@@ -511,7 +512,7 @@ function SectionHeader({ title }) {
   return (
     <div className="flex items-center mb-4">
       <div className="w-1 h-4 bg-blue-600 mr-3 rounded-full"></div>
-      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text)", opacity: 0.6 }}>
         {title}
       </h3>
     </div>

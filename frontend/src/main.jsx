@@ -5,6 +5,12 @@ import App from "./App.jsx";
 import { AuthProvider } from "./state/AuthContext.jsx";
 import "./styles.css";
 
+/* 👉 Apply saved theme BEFORE React loads */
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+  document.documentElement.classList.add("dark");
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -14,4 +20,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>
 );
-

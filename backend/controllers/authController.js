@@ -199,18 +199,46 @@ export const getCurrentUser = async (req, res) => {
   }
 };
 
-// DEV/Console version of forgotPassword - logs OTP to server (for development mode)
-export const forgotPassword = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ message: "Validation failed", errors: errors.array() });
+// Update user profile
+export const updateUserProfile = async (req, res) => {
+  try {
+    const user = req.user; // comes from protect middleware
+
+    if (!user) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const { fullName, email, phone, companyName } = req.body;
+
+    if (fullName !== undefined) user.fullName = fullName;
+    if (email !== undefined) user.email = email.toLowerCase();
+    if (phone !== undefined) user.phone = phone;
+    if (companyName !== undefined) user.companyName = companyName;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      user: {
+        id: updatedUser._id,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        phone: updatedUser.phone,
+        companyName: updatedUser.companyName,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to update user profile",
+      error: error.message,
+    });
   }
+};
 
-  // debug log incoming body to help diagnose missing fields
-  // eslint-disable-next-line no-console
-  console.log("forgotPassword request body:", req.body);
-
+// Real Email Version of forgotPassword
+export const forgotPassword = async (req, res) => {
   const { email } = req.body;
+
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
@@ -225,20 +253,54 @@ export const forgotPassword = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-    // 2. Save to DB (Bypassing validation to prevent 'fullName' errors)
+    // 2. Save to DB (Bypassing validation)
     user.resetOtp = hashedOtp;
     user.resetOtpExpiry = Date.now() + 10 * 60 * 1000; // 10 mins
     await user.save({ validateBeforeSave: false });
 
-    // 3. DEV MODE: Log OTP to Console instead of sending email
-    console.log("========================================");
-    console.log(`🔒 DEVELOPMENT MODE - OTP FOR ${email}`);
-    console.log(`🔑 OTP CODE: ${otp}`);
-    console.log("========================================");
+    // 3. Configure Email Transporter
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT) || 587,
+      secure: process.env.EMAIL_SECURE === "true",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, // Ensure this is your 16-char App Password
+      },
+    });
 
-    // Return success to frontend so it proceeds to the next screen
-    res.json({ message: "OTP sent (Check Server Console)" });
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Password Reset</h2>
+          <p>Your verification code is:</p>
+          <h1 style="color: #2563EB; letter-spacing: 5px;">${otp}</h1>
+          <p>This code expires in 10 minutes.</p>
+        </div>
+      `,
+    };
 
+    // 4. Send Email
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`✅ Email sent to ${email}`);
+      res.json({ message: "OTP sent to your email." });
+    } catch (emailError) {
+      console.error("❌ Email Sending Failed:", emailError);
+
+      // Fallback: If email fails, log to console so you aren't stuck
+      console.log("========================================");
+      console.log(`🔑 FALLBACK OTP: ${otp}`);
+      console.log("========================================");
+
+      return res.status(500).json({ 
+        message: "Failed to send email. Check server console for details.",
+        error: emailError.message 
+      });
+    }
   } catch (err) {
     console.error("Forgot Password Error:", err);
     res.status(500).json({ message: "Server Error", error: err.message });

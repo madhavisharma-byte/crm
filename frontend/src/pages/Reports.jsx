@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, Download, TrendingUp, Package, Users, BarChart3, IndianRupee } from 'lucide-react';
-import Sidebar from '../components/dashboard/Sidebar';
-import Header from '../components/dashboard/header';
+import Sidebar from '../components/(website)/Sidebar';
+import Header from '../components/(website)/header';
 import ReportHeader from '../components/ReportHeader';
 
 const SUMMARY_CARDS = [
@@ -79,30 +79,30 @@ const ACTION_BUTTONS = [
 // Reusable components
 // ---------------------------
 const ActionButton = ({ icon, text }) => (
-  <button className="flex items-center gap-2 border border-gray-200 hover:bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+  <button className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium transition-colors" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)", color: "var(--text)" }}>
     {icon}
     {text}
   </button>
 );
 
 const ReportCard = ({ title, value, trend, trendColor, icon, bg }) => (
-  <div className="bg-white p-5 rounded-xl border border-gray-200 shadow flex items-center gap-4">
+  <div className="p-5 rounded-xl border shadow flex items-center gap-4" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
     <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${bg}`}>
       {icon}
     </div>
     <div>
-      <p className="text-sm text-gray-500 font-medium">{title}</p>
-      <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+      <p className="text-sm font-medium" style={{ color: "var(--text)", opacity: 0.6 }}>{title}</p>
+      <h3 className="text-2xl font-bold" style={{ color: "var(--text)" }}>{value}</h3>
       <p className={`text-xs font-semibold mt-1 ${trendColor}`}>{trend}</p>
     </div>
   </div>
 );
 
 const ProductItem = ({ name, units, price }) => (
-  <div className="flex justify-between items-start pb-4 border-b border-gray-200 last:border-0 last:pb-0">
+  <div className="flex justify-between items-start pb-4 border-b last:border-0 last:pb-0" style={{ borderColor: "var(--border)" }}>
     <div>
-      <h4 className="text-sm font-semibold text-gray-900">{name}</h4>
-      <p className="text-xs text-gray-500 mt-1">{units}</p>
+      <h4 className="text-sm font-semibold" style={{ color: "var(--text)" }}>{name}</h4>
+      <p className="text-xs mt-1" style={{ color: "var(--text)", opacity: 0.6 }}>{units}</p>
     </div>
     <span className="text-sm font-bold text-green-600">{price}</span>
   </div>
@@ -110,7 +110,7 @@ const ProductItem = ({ name, units, price }) => (
 
 const ReportsPage = () => {
   return (
-    <div className="flex min-h-screen w-full bg-gray-100 font-sans text-gray-900">
+    <div className="flex min-h-screen w-full font-sans transition-colors duration-300" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
       <Sidebar />
       <div className="flex-1 flex flex-col h-full min-w-0 md:ml-64">
         <Header />
@@ -118,8 +118,8 @@ const ReportsPage = () => {
           {/* Title Section with Actions to the right */}
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Report</h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Report</h1>
+              <p className="text-sm mt-1" style={{ color: "var(--text)", opacity: 0.6 }}>
                 Manage your account and platform configurations
               </p>
             </div>
@@ -141,14 +141,14 @@ const ReportsPage = () => {
           {/* Main Chart & Top Selling Products */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Revenue Trend Chart */}
-            <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow">
+            <div className="lg:col-span-2 p-6 rounded-xl border shadow" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
               <div className="flex items-center gap-2 mb-6">
                 <BarChart3 className="text-blue-500 w-5 h-5" />
-                <h3 className="font-bold text-gray-900">Revenue Trend</h3>
+                <h3 className="font-bold" style={{ color: "var(--text)" }}>Revenue Trend</h3>
               </div>
               <div className="relative h-64 w-full mt-4">
                 {/* Y-Axis Labels */}
-                <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-xs text-gray-400 font-medium">
+                <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-xs font-medium" style={{ color: "var(--text)", opacity: 0.4 }}>
                   {CHART_Y_LABELS.map((label, i) => (
                     <span key={i}>{label}</span>
                   ))}
@@ -158,15 +158,15 @@ const ReportsPage = () => {
                   {/* Grid Lines */}
                   <div className="absolute inset-0 flex flex-col justify-between pb-6">
                     {[...Array(CHART_Y_LABELS.length)].map((_, i) => (
-                      <div key={i} className="w-full h-px bg-gray-200 border-t border-dashed border-gray-200"></div>
+                      <div key={i} className="w-full h-px border-t border-dashed" style={{ backgroundColor: "var(--border)", borderColor: "var(--border)" }}></div>
                     ))}
                   </div>
                   {/* SVG Chart Path (static demo) */}
                   <svg className="absolute inset-0 h-[calc(100%-24px)] w-full" preserveAspectRatio="none">
                     <defs>
                       <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.8"/>
-                        <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.1"/>
+                        <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.8" />
+                        <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.1" />
                       </linearGradient>
                     </defs>
                     <path
@@ -176,7 +176,7 @@ const ReportsPage = () => {
                     <rect x="0" y="145" width="100%" height="5" fill="#F59E0B" />
                   </svg>
                   {/* X-Axis Labels */}
-                  <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-400 font-medium pt-2">
+                  <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs font-medium pt-2" style={{ color: "var(--text)", opacity: 0.4 }}>
                     {CHART_X_LABELS.map((label, i) => (
                       <span key={i}>{label}</span>
                     ))}
@@ -185,8 +185,8 @@ const ReportsPage = () => {
               </div>
             </div>
             {/* Top Selling Products */}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow flex flex-col">
-              <h3 className="font-bold text-gray-900 mb-6">Top Selling Products</h3>
+            <div className="p-6 rounded-xl border shadow flex flex-col" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
+              <h3 className="font-bold mb-6" style={{ color: "var(--text)" }}>Top Selling Products</h3>
               <div className="space-y-6 flex-1">
                 {TOP_SELLING_PRODUCTS.map((product) => (
                   <ProductItem

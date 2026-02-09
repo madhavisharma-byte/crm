@@ -1,6 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
-import { login, register, googleLogin, getCurrentUser } from "../controllers/authController.js";
+import { login, register, googleLogin, getCurrentUser, updateUserProfile } from "../controllers/authController.js";
 import { forgotPassword, resetPassword } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -9,9 +9,7 @@ const router = express.Router();
 router.post(
   "/register",
   [
-    // ✅ ADDED: Validate 'fullName' matching your React form
     body("fullName").notEmpty().withMessage("Full name is required"),
-
     body("email").isEmail().withMessage("Valid email is required"),
     body("password").isLength({ min: 6 }).withMessage("Password must be 6+ chars"),
   ],
@@ -30,6 +28,16 @@ router.post(
 router.post("/google", googleLogin);
 
 router.get("/me", protect, getCurrentUser);
+
+router.put(
+  "/update",
+  protect,
+  [
+    body("fullName").optional().notEmpty(),
+    body("email").optional().isEmail(),
+  ],
+  updateUserProfile
+);
 
 router.post(
   "/forgot-password",

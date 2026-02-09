@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Truck, SlidersHorizontal } from "lucide-react";
-import Sidebar from "../components/dashboard/Sidebar";
-import Header from "../components/dashboard/header";
+import Sidebar from "../components/(website)/Sidebar";
+import Header from "../components/(website)/header";
 import SettingsHeader from "../components/SettingsHeader";
 
 // Hardcoded shipping providers list, for layout/demo (like Settings.jsx for marketplaces)
@@ -46,7 +46,7 @@ const shippingProviders = [
 
 const SettingsShipping = React.memo(function SettingsShipping() {
   return (
-    <div className="flex min-h-screen w-full bg-[#F3F4F6] font-sans text-gray-800">
+    <div className="flex min-h-screen w-full font-sans transition-colors duration-300" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
       {/* Mark this as "settings" in sidebar explicitly so the tab is highlighted/active */}
       <Sidebar activePage="settings" />
       <div className="flex-1 flex flex-col h-full min-w-0 md:ml-64">
@@ -56,14 +56,14 @@ const SettingsShipping = React.memo(function SettingsShipping() {
 
           <div className="w-full max-w-[1440px] mx-auto flex flex-col gap-8">
             {/* --- Card 1: Shipping Providers --- */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="rounded-xl shadow-sm border p-6" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
               {/* Card Header */}
               <div className="flex items-center gap-2 mb-6">
                 <Truck className="text-blue-600 w-5 h-5" />
-                <h3 className="font-bold text-gray-800">Shipping Providers</h3>
+                <h3 className="font-bold" style={{ color: "var(--text)" }}>Shipping Providers</h3>
               </div>
               {/* Table Header */}
-              <div className="grid grid-cols-12 gap-4 bg-gray-50 py-3 px-4 rounded-t-lg border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+              <div className="grid grid-cols-12 gap-4 py-3 px-4 rounded-t-lg border-b text-xs font-bold uppercase tracking-wider mb-2" style={{ backgroundColor: "rgba(0,0,0,0.02)", borderColor: "var(--border)", color: "var(--text)", opacity: 0.7 }}>
                 <div className="col-span-4">Provider</div>
                 <div className="col-span-3">Service Type</div>
                 <div className="col-span-2">Status</div>
@@ -79,23 +79,23 @@ const SettingsShipping = React.memo(function SettingsShipping() {
               </div>
 
               {/* Add Shipping Provider Button */}
-              <button className="mt-4 w-full py-3 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:border-gray-400 transition-all flex items-center justify-center gap-2">
+              <button className="mt-4 w-full py-3 border border-dashed rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2" style={{ backgroundColor: "rgba(0,0,0,0.02)", borderColor: "var(--border)", color: "var(--text)", opacity: 0.7 }}>
                 <Truck className="w-4 h-4" />
                 Add New Shipping Provider
               </button>
             </div>
 
             {/* --- Card 2: Default Shipping Rules --- */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 w-full">
+            <div className="rounded-xl shadow-sm border p-6 w-full" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
               {/* Card Header */}
               <div className="flex items-center gap-2 mb-6">
                 <SlidersHorizontal className="text-indigo-600 w-5 h-5" />
-                <h3 className="font-bold text-gray-800">Default Shipping Rules</h3>
+                <h3 className="font-bold" style={{ color: "var(--text)" }}>Default Shipping Rules</h3>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-100">
+              <div className="rounded-lg p-4 flex items-center justify-between border" style={{ backgroundColor: "rgba(0,0,0,0.02)", borderColor: "var(--border)" }}>
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900">Enable COD</h4>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <h4 className="text-sm font-bold" style={{ color: "var(--text)" }}>Enable COD</h4>
+                  <p className="text-xs mt-1" style={{ color: "var(--text)", opacity: 0.6 }}>
                     Cash on Delivery option
                   </p>
                 </div>
@@ -122,7 +122,7 @@ const ProviderRow = React.memo(function ProviderRow({
 }) {
   const isConnected = status === "Connected";
   return (
-    <div className="grid grid-cols-12 gap-4 items-center py-4 px-4 border-b border-gray-50 hover:bg-gray-50/50 transition-colors last:border-0">
+    <div className="grid grid-cols-12 gap-4 items-center py-4 px-4 border-b transition-colors last:border-0" style={{ borderColor: "var(--border)" }}>
       {/* Column 1: Provider Info */}
       <div className="col-span-4 flex items-center gap-3">
         <div
@@ -131,22 +131,21 @@ const ProviderRow = React.memo(function ProviderRow({
           {initials}
         </div>
         <div>
-          <h4 className="text-sm font-bold text-gray-800">{name}</h4>
-          <p className="text-[10px] text-gray-400 font-medium">{version}</p>
+          <h4 className="text-sm font-bold" style={{ color: "var(--text)" }}>{name}</h4>
+          <p className="text-[10px] font-medium" style={{ color: "var(--text)", opacity: 0.5 }}>{version}</p>
         </div>
       </div>
       {/* Column 2: Service Type */}
       <div className="col-span-3">
-        <span className="text-sm text-gray-600 font-medium">{service}</span>
+        <span className="text-sm font-medium" style={{ color: "var(--text)", opacity: 0.7 }}>{service}</span>
       </div>
       {/* Column 3: Status */}
       <div className="col-span-2">
         <span
-          className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wide ${
-            isConnected
+          className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wide ${isConnected
               ? "bg-green-100 text-green-700"
               : "bg-gray-100 text-gray-600"
-          }`}
+            }`}
         >
           {status}
         </span>
@@ -168,14 +167,12 @@ const ToggleSwitch = ({ initialState }) => {
   return (
     <button
       onClick={() => setEnabled(!enabled)}
-      className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none ${
-        enabled ? "bg-blue-600" : "bg-gray-200"
-      }`}
+      className="w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none"
+      style={{ backgroundColor: enabled ? "rgb(37 99 235)" : "var(--border)" }}
     >
       <div
-        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-          enabled ? "translate-x-5" : "translate-x-0"
-        }`}
+        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${enabled ? "translate-x-5" : "translate-x-0"
+          }`}
       />
     </button>
   );

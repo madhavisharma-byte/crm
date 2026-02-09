@@ -1,37 +1,44 @@
 import express from "express";
-import { body, param } from "express-validator";
+import { body } from "express-validator";
 import {
-  createItem,
-  deleteItem,
-  getItems,
-  updateItem,
+  getInventory,
+  getInventoryStats,
+  addInventoryItem,
+  updateInventoryItem,
+  deleteInventoryItem,
 } from "../controllers/inventoryController.js";
-import { protect, adminOnly } from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", protect, getItems);
+// Removed protect from getInventory route
+router.get("/", getInventory);
+
+router.get("/stats", protect, getInventoryStats);
 
 router.post(
   "/",
   protect,
   [
-    body("sku").notEmpty(),
     body("title").notEmpty(),
-    body("platform").optional().isIn(["amazon", "flipkart", "shopify", "other"]),
-    body("quantity").optional().isNumeric(),
+    body("sku").notEmpty(),
+    body("price").isFloat({ gt: 0 }),
+    body("quantity").isInt({ min: 0 }),
   ],
-  createItem
+  addInventoryItem
 );
 
 router.put(
   "/:id",
   protect,
-  [param("id").isMongoId()],
-  updateItem
+  [
+    body("price").optional().isFloat({ gt: 0 }),
+    body("quantity").optional().isInt({ min: 0 }),
+    body("title").optional().notEmpty(),
+  ],
+  updateInventoryItem
 );
 
-router.delete("/:id", protect, adminOnly, [param("id").isMongoId()], deleteItem);
+router.delete("/:id", protect, deleteInventoryItem);
 
 export default router;
-

@@ -1,9 +1,12 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
-import { Upload, Download, Plus, Search, Filter, Package, AlertTriangle, TrendingDown, BarChart3, MoreHorizontal, Box, Layers, LineChart, Loader } from 'lucide-react';
-import Sidebar from '../components/dashboard/Sidebar';
-import Header from '../components/dashboard/header';
-import AddInventory from '../pages/AddInventory';
+import { Upload, Download, Plus, Filter, Package, AlertTriangle, TrendingDown, BarChart3, MoreHorizontal, Box, Layers, LineChart, Loader } from 'lucide-react';
+import Sidebar from '../components/(website)/Sidebar';
+import Header from '../components/(website)/header';
+import AddInventory from '../components/AddInventory';
 import api from '../utils/api';
+
+// Fallback data removed per instructions.
 
 const INVENTORY_STATUSES = [
   { label: 'All', value: 'all' },
@@ -21,47 +24,16 @@ const INVENTORY_STATUS_MAP = {
   out_of_stock: ['Out of Stock'],
 };
 
-const rawInventoryData = [
-  {
-    name: 'Nike Air Max 270',
-    sku: 'SKU-001',
-    category: 'Mens Footwear',
-    stock: 45,
-    price: '₹1,299',
-    status: 'In Stock',
-  },
-  {
-    name: 'Samsung Galaxy S24 Case',
-    sku: 'SKU-002',
-    category: 'Phone Cases',
-    stock: 8,
-    lowThreshold: 10,
-    price: '₹999',
-    status: 'Low Stock',
-  },
-  {
-    name: 'Premium Leather Wallet',
-    sku: 'SKU-003',
-    category: 'Accessories',
-    stock: 0,
-    lowThreshold: 5,
-    price: '₹2,499',
-    status: 'Out of Stock',
-  },
-];
-
-// Helper to get unique categories from raw data
 const getUniqueCategories = (inventory) => {
   const set = new Set();
   inventory.forEach((item) => set.add(item.category));
   return Array.from(set);
 };
 
-// Generate counts for each status for tab badges
 function getTabInventoryCount(inventory, key) {
   if (key === 'all') return inventory.length;
   if (key === 'categories') return getUniqueCategories(inventory).length;
-  if (key === 'analytics') return ''; // Analytics might not need a badge
+  if (key === 'analytics') return '';
   if (INVENTORY_STATUS_MAP[key]) {
     return inventory.filter((itm) =>
       INVENTORY_STATUS_MAP[key].includes(itm.status)
@@ -70,30 +42,26 @@ function getTabInventoryCount(inventory, key) {
   return 0;
 }
 
-// Reusable action button, like in OrdersPage
 const ActionButton = React.memo(({ icon, text }) => (
-  <button className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+  <button className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium transition-colors" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)", color: "var(--text)" }}>
     {icon}
     {text}
   </button>
 ));
 
-// TabButton styled to look like Orders tab (with option for icon)
 const TabButton = React.memo(({ text, icon, active, count, onClick }) => (
   <button
     type="button"
-    className={`mr-8 pb-3 text-sm font-medium transition-all relative flex items-center gap-2 ${
-      active ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
-    }`}
+    className={`mr-8 pb-3 text-sm font-medium transition-all relative flex items-center gap-2 ${active ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+      }`}
     onClick={onClick}
   >
     {icon && <span className="mb-0.5">{icon}</span>}
     <span>{text}</span>
     {(count || count === 0) && (
       <span
-        className={`inline-block px-2 py-0.5 text-xs font-semibold ml-1 ${
-          active ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-        } rounded-full`}
+        className={`inline-block px-2 py-0.5 text-xs font-semibold ml-1 ${active ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+          } rounded-full`}
       >
         {count}
       </span>
@@ -104,7 +72,6 @@ const TabButton = React.memo(({ text, icon, active, count, onClick }) => (
   </button>
 ));
 
-// Status badge colors adapted from Orders style
 const StatusBadge = ({ status }) => {
   let style = '';
   switch (status) {
@@ -128,18 +95,17 @@ const StatusBadge = ({ status }) => {
 };
 
 const SummaryCard = ({ title, value, icon, bg }) => (
-  <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+  <div className="p-5 rounded-xl border shadow-sm flex items-center gap-4" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
     <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${bg}`}>
       {icon}
     </div>
     <div>
-      <p className="text-sm text-gray-500 font-medium">{title}</p>
-      <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+      <p className="text-sm font-medium" style={{ color: "var(--text)", opacity: 0.6 }}>{title}</p>
+      <h3 className="text-2xl font-bold" style={{ color: "var(--text)" }}>{value}</h3>
     </div>
   </div>
 );
 
-// Table row for inventory list
 const InventoryRow = React.memo(({ item }) => (
   <tr className="hover:bg-gray-50/50 transition-colors group">
     <td className="p-4">
@@ -147,7 +113,7 @@ const InventoryRow = React.memo(({ item }) => (
         <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
           <Box size={20} />
         </div>
-        <span className="font-medium text-gray-900 text-sm">{item.name}</span>
+        <span className="font-medium text-sm" style={{ color: "var(--text)" }}>{item.name}</span>
       </div>
     </td>
     <td className="p-4 text-sm text-gray-500">{item.sku}</td>
@@ -158,15 +124,15 @@ const InventoryRow = React.memo(({ item }) => (
     </td>
     <td className="p-4">
       <div className="flex flex-col">
-        <span className="text-sm font-medium text-gray-900">{item.stock} units</span>
-        {item.lowThreshold && (
+        <span className="text-sm font-medium" style={{ color: "var(--text)" }}>{item.stock} units</span>
+        {item.lowThreshold && item.stock < 10 && (
           <span className="text-[10px] text-orange-600">
             Low threshold: {item.lowThreshold}
           </span>
         )}
       </div>
     </td>
-    <td className="p-4 text-sm font-bold text-gray-900">{item.price}</td>
+    <td className="p-4 text-sm font-bold" style={{ color: "var(--text)" }}>{item.price}</td>
     <td className="p-4">
       <StatusBadge status={item.status} />
     </td>
@@ -178,21 +144,20 @@ const InventoryRow = React.memo(({ item }) => (
   </tr>
 ));
 
-// Simple Categories/Analytics views for new tabs
 const CategoriesView = ({ inventory }) => {
   const categories = getUniqueCategories(inventory).map((cat) => ({
     name: cat,
     count: inventory.filter(i => i.category === cat).length,
   }));
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="rounded-xl shadow-sm border p-6" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-blue-600">
         <Layers size={20} /> Product Categories
       </h2>
       <ul>
         {categories.map((cat) => (
           <li key={cat.name} className="flex items-center py-3 border-b last:border-b-0">
-            <span className="flex-1 font-medium text-gray-800">{cat.name}</span>
+            <span className="flex-1 font-medium" style={{ color: "var(--text)" }}>{cat.name}</span>
             <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full ml-3">{cat.count} products</span>
           </li>
         ))}
@@ -202,80 +167,112 @@ const CategoriesView = ({ inventory }) => {
 };
 
 const AnalyticsView = ({ inventory }) => {
-  // In a real app this would be more elaborate
   const totalStock = inventory.reduce((a, b) => a + (b.stock || 0), 0);
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="rounded-xl shadow-sm border p-6" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-green-600">
         <LineChart size={20} /> Analytics Overview
       </h2>
       <p className="mb-2">Total SKUs: <span className="font-bold">{inventory.length}</span></p>
       <p className="mb-2">Combined Stock: <span className="font-bold">{totalStock}</span></p>
-      {/* You can add more analytics/charts here */}
       <div className="mt-4 italic text-gray-500">More analytics coming soon...</div>
     </div>
   );
 };
 
+// Utility function to parse price string and get unit price as number
+function parseUnitPrice(priceStr) {
+  if (!priceStr) return 0;
+  if (typeof priceStr === 'number') return priceStr;
+  const numeric = priceStr.replace(/[^\d.]/g, '');
+  const value = Number(numeric);
+  return isNaN(value) ? 0 : value;
+}
+
+// Calculates stats for inventory array: totalSkus, lowStock, outOfStock, totalValue
+function calculateStats(items) {
+  return {
+    totalSkus: items.length,
+    lowStock: items.filter(item => item.status === 'Low Stock').length,
+    outOfStock: items.filter(item => item.status === 'Out of Stock').length,
+    totalValue: items.reduce((sum, item) => {
+      const unitPrice = parseUnitPrice(item.price);
+      return sum + unitPrice * (item.stock || 0);
+    }, 0)
+  };
+}
+
 const InventoryPage = React.memo(() => {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
   const [showAddInventoryForm, setShowAddInventoryForm] = useState(false);
-  const [inventory, setInventory] = useState(rawInventoryData);
-  const [loading, setLoading] = useState(false);
+  const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalSkus: 0,
+    lowStock: 0,
+    outOfStock: 0,
+    totalValue: 0,
+  });
 
-  // Fetch inventory from backend
+  // Fetch inventory products from backend only, do not fallback to fallback data
   const fetchInventory = async () => {
+    setLoading(true);
+
     try {
-      setLoading(true);
-      const response = await api.get('/inventory');
-      if (response.data && response.data.items) {
-        // Transform backend inventory to frontend format
-        const transformedInventory = response.data.items.map(item => {
-          const metadata = item.metadata || {};
-          // Determine status based on quantity
-          let status = 'Out of Stock';
-          if (item.quantity > 10) {
-            status = 'In Stock';
-          } else if (item.quantity > 0) {
-            status = 'Low Stock';
-          }
-          
-          return {
-            name: item.title,
-            sku: item.sku,
-            category: metadata.category || 'Uncategorized',
-            stock: item.quantity || 0,
-            price: `₹${item.price?.toLocaleString('en-IN') || '0'}`,
-            status: status,
-            lowThreshold: 10,
-            _id: item._id // Keep backend ID
-          };
-        });
-        setInventory(transformedInventory);
-      }
-    } catch (err) {
-      console.error('Error fetching inventory:', err);
-      // Keep default inventory on error
+      // Remove protected for get the inventory (i.e. call the non-protected endpoint)
+      const res = await api.get("/inventory");
+
+      const items = Array.isArray(res.data)
+        ? res.data
+        : res.data.items || [];
+
+      const mapped = items.map(item => ({
+        _id: item._id,            // ✅ NOW IT EXISTS
+        name: item.title,
+        sku: item.sku,
+        category: item.category || "Uncategorized",
+        stock: item.quantity || 0,
+        price: item.price ?? 0,
+        status:
+          item.quantity === 0
+            ? "Out of Stock"
+            : item.quantity <= (item.lowStockThreshold ?? 10)
+              ? "Low Stock"
+              : "In Stock",
+        lowThreshold: item.lowStockThreshold,
+      }));
+
+      setInventory(mapped);
+      setStats(calculateStats(mapped));
+    } catch (error) {
+      console.error("Inventory fetch failed:", error);
+      setInventory([]);
+      setStats(calculateStats([]));
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch inventory on component mount
   useEffect(() => {
     fetchInventory();
+    // eslint-disable-next-line
   }, []);
 
-  // Handler when inventory item is successfully created
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   function handleInventoryCreated(newItem) {
-    // Refresh inventory from backend
     fetchInventory();
-    // Close the form and show inventory list
     setShowAddInventoryForm(false);
   }
 
-  // Derived filtered inventory based on search & status
+  // Filtered inventory according to tab and search
   const filteredInventory = useMemo(() => {
     let res = inventory;
     if (
@@ -297,21 +294,24 @@ const InventoryPage = React.memo(() => {
       );
     }
     return res;
-  }, [activeTab, search]);
+  }, [activeTab, search, inventory]);
 
   return (
-    <div className="flex min-h-screen w-full bg-[#F3F4F6] font-sans text-gray-800">
+    <div className="flex min-h-screen w-full font-sans transition-colors duration-300" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
       <Sidebar />
-      <div className="flex-1 flex flex-col h-full min-w-0 md:ml-64">
+      <div className="flex-1 flex flex-col h-full min-w-0">
         <Header />
-        <div className="pt-24 px-8 flex-1 overflow-y-auto">
+        <div className="pt-8 px-8 flex-1 overflow-y-auto">
           {showAddInventoryForm ? (
-            // Show Add Inventory Form
             <div className="w-full">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Add New Inventory Item</h1>
-                  <p className="text-sm text-gray-500 mt-1">Fill in the details to add a new product to inventory</p>
+                  <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
+                    Add New Inventory Item
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Fill in the details to add a new product to inventory
+                  </p>
                 </div>
                 <button
                   onClick={() => setShowAddInventoryForm(false)}
@@ -327,13 +327,11 @@ const InventoryPage = React.memo(() => {
               />
             </div>
           ) : (
-            // Show Inventory List
             <>
-              {/* Header with title & description and action buttons */}
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Inventory</h1>
+                  <p className="text-sm mt-1" style={{ color: "var(--text)", opacity: 0.6 }}>
                     Manage your product catalog and stock levels
                   </p>
                 </div>
@@ -352,34 +350,32 @@ const InventoryPage = React.memo(() => {
                   </button>
                 </div>
               </div>
-              {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <SummaryCard
                   title="Total Products"
-                  value="2,456"
+                  value={stats.totalSkus ? stats.totalSkus.toLocaleString() : '0'}
                   icon={<Package className="text-blue-600 w-6 h-6" />}
                   bg="bg-blue-50"
                 />
                 <SummaryCard
                   title="Low Stock"
-                  value="23"
+                  value={stats.lowStock}
                   icon={<AlertTriangle className="text-orange-500 w-6 h-6" />}
                   bg="bg-orange-50"
                 />
                 <SummaryCard
                   title="Out of Stock"
-                  value="5"
+                  value={stats.outOfStock}
                   icon={<TrendingDown className="text-red-500 w-6 h-6" />}
                   bg="bg-red-50"
                 />
                 <SummaryCard
-                  title="Total Value"
-                  value="₹18.5L"
+                  title="Total Inventory Value"
+                  value={formatCurrency(stats.totalValue)}
                   icon={<BarChart3 className="text-green-600 w-6 h-6" />}
                   bg="bg-green-50"
                 />
               </div>
-              {/* Tab navigation as in OrdersPage */}
               <div className="flex flex-row border-b border-gray-100 mb-6 overflow-x-auto">
                 {INVENTORY_STATUSES.map((tab, idx) => {
                   let icon = null;
@@ -393,10 +389,10 @@ const InventoryPage = React.memo(() => {
                         tab.value === 'all'
                           ? tab.label + ' Products'
                           : tab.value === 'categories'
-                          ? 'Categories'
-                          : tab.value === 'analytics'
-                          ? 'Analytics'
-                          : tab.label + ' Stock'
+                            ? 'Categories'
+                            : tab.value === 'analytics'
+                              ? 'Analytics'
+                              : tab.label + ' Stock'
                       }
                       active={activeTab === tab.value}
                       count={
@@ -409,25 +405,23 @@ const InventoryPage = React.memo(() => {
                   );
                 })}
               </div>
-              {/* Render different view if categories or analytics tab selected */}
               {activeTab === 'categories' ? (
                 <CategoriesView inventory={inventory} />
               ) : activeTab === 'analytics' ? (
                 <AnalyticsView inventory={inventory} />
               ) : (
                 <>
-                  {/* Inventory Table */}
                   {loading ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 flex items-center justify-center">
+                    <div className="rounded-xl shadow-sm border flex items-center justify-center p-16" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
                       <Loader size={24} className="animate-spin text-blue-600" />
                       <span className="ml-3 text-gray-600">Loading inventory...</span>
                     </div>
                   ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="rounded-xl shadow-sm border overflow-hidden" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
                       <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                           <thead>
-                            <tr className="border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <tr className="border-b text-xs font-semibold uppercase tracking-wider" style={{ borderColor: "var(--border)", backgroundColor: "rgba(0,0,0,0.02)", color: "var(--text)", opacity: 0.7 }}>
                               <th className="p-4">Product</th>
                               <th className="p-4">SKU</th>
                               <th className="p-4">Category</th>
@@ -440,7 +434,7 @@ const InventoryPage = React.memo(() => {
                           <tbody className="divide-y divide-gray-50">
                             {filteredInventory.length > 0 ? (
                               filteredInventory.map((item, idx) => (
-                                <InventoryRow key={item.sku || item._id || idx} item={item} />
+                                <InventoryRow key={item._id || item.sku || idx} item={item} />
                               ))
                             ) : (
                               <tr>
@@ -452,16 +446,15 @@ const InventoryPage = React.memo(() => {
                           </tbody>
                         </table>
                       </div>
-                      {/* Pagination / Footer */}
-                      <div className="p-4 border-t border-gray-100 text-xs text-gray-400 flex justify-between items-center">
+                      <div className="p-4 border-t text-xs flex justify-between items-center" style={{ borderColor: "var(--border)", color: "var(--text)", opacity: 0.6 }}>
                         <span>
                           Showing {filteredInventory.length} of {inventory.length} products
                         </span>
                         <div className="flex gap-2">
-                          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">
+                          <button className="px-3 py-1 border rounded hover:opacity-80" style={{ borderColor: "var(--border)" }}>
                             Prev
                           </button>
-                          <button className="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">
+                          <button className="px-3 py-1 border rounded hover:opacity-80" style={{ borderColor: "var(--border)" }}>
                             Next
                           </button>
                         </div>
@@ -472,7 +465,6 @@ const InventoryPage = React.memo(() => {
               )}
             </>
           )}
-
         </div>
       </div>
     </div>

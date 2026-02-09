@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     fullName: {
       type: String,
       required: true,
-      trim: true,
+      trim: true, 
     },
     // email (unique)
     email: {

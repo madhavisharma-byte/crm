@@ -15,21 +15,22 @@ const SettingsHeader = ({ activeTab = 'Marketplaces' }) => {
         <div className="mb-8">
             {/* Title Section */}
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-                <p className="text-sm text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Settings</h1>
+                <p className="text-sm mt-1" style={{ color: "var(--text)", opacity: 0.6 }}>
                     Manage your account and platform configurations
                 </p>
             </div>
 
             {/* Tabs Section */}
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b" style={{ borderColor: "var(--border)" }}>
                 {tabs.map((tab) => (
                     <button
                         key={tab.name}
                         className={`
                             mr-8 pb-3 text-sm font-medium transition-all relative
-                            ${activeTab === tab.name ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}
+                            ${activeTab === tab.name ? 'text-blue-600' : 'hover:opacity-80'}
                         `}
+                        style={{ color: activeTab === tab.name ? undefined : "var(--text)", opacity: activeTab === tab.name ? 1 : 0.6 }}
                         type="button"
                         onClick={() => {
                             if (tab.link && activeTab !== tab.name) {

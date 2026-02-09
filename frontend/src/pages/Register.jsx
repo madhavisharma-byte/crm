@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, ChevronDown } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api.js';
 import { useAuth } from '../state/AuthContext.jsx';
 import LeftPanel from '../components/LoginLeftPannel.jsx';
 
-// Backend expects: fullName, email, password, confirmPassword, phone, companyName, role, termsAccepted
+// Backend expects: fullName, email, password, confirmPassword, phone, companyName, termsAccepted
 
 const REGISTER_PAGE_TITLE = "Create Your Account";
 const REGISTER_PAGE_SUBTITLE = "Join thousands of businesses already using our platform";
@@ -60,12 +60,6 @@ const PASSWORD_FIELDS = [
   }
 ];
 
-const ROLE_OPTIONS = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'manager', label: 'Manager' },
-  { value: 'staff', label: 'Staff' }
-];
-
 const TERMS_TEXT = (
   <>
     I accept the <a href="#" className="text-blue-600 underline">Terms of Service</a> and <a href="#" className="text-blue-600 underline">Privacy Policy</a> <span className="text-red-500">*</span>
@@ -87,7 +81,6 @@ const RegisterPage = () => {
     companyName: '',
     password: '',
     confirmPassword: '',
-    role: ROLE_OPTIONS[0].value,
     termsAccepted: false
   });
 
@@ -156,7 +149,6 @@ const RegisterPage = () => {
           companyName: formData.companyName,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
-          role: formData.role,
           termsAccepted: formData.termsAccepted,
         };
         const { data } = await api.post('/auth/register', payload);
@@ -233,89 +225,61 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center py-10 px-4">
-      {/* Main Container */}
-      <div className="flex flex-col lg:flex-row w-full max-w-[1100px] bg-white rounded-xl overflow-hidden shadow-2xl">
+    <div className="min-h-screen w-full flex items-center justify-center p-0 md:p-0 bg-transparent">
+      {/* Main Container: left and right split, right is register form, left is LeftPanel */}
+      <div
+        className="flex flex-col md:flex-row w-full h-screen max-w-none md:max-w-screen-2xl"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        {/* Left Panel - 1/2 */}
+        <div className="md:w-1/2 w-full h-1/2 md:h-full">
+          <LeftPanel />
+        </div>
+        {/* Right Panel - 1/2 */}
+        <div className="flex flex-col justify-center w-full md:w-1/2 h-full p-6 md:p-12" style={{ backgroundColor: "var(--card)" }}>
+          <div className="w-full max-w-md mx-auto">
+            {/* Title & Subtitle */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold" style={{ color: "var(--text)" }}>{REGISTER_PAGE_TITLE}</h2>
+              <p className="text-sm mt-2" style={{ color: "var(--text)", opacity: 0.6 }}>{REGISTER_PAGE_SUBTITLE}</p>
+            </div>
 
-        <LeftPanel />
+            {/* Toggle Switch */}
+            <div className="p-1 rounded-lg flex mb-8 max-w-sm mx-auto w-full" style={{ backgroundColor: "var(--bg)" }}>
+              {TOGGLE_BUTTONS.map(btn => (
+                <button
+                  key={btn.text}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all
+                    ${btn.active ? 'bg-blue-600 text-white shadow-sm' : 'hover:opacity-80'}`}
+                  style={{ color: btn.active ? 'white' : 'var(--text)', opacity: btn.active ? 1 : 0.6 }}
+                  onClick={() => btn.route && navigate(btn.route)}
+                  disabled={btn.active}
+                  type="button"
+                >
+                  {btn.text}
+                </button>
+              ))}
+            </div>
 
-        {/* Right Side - Scrollable Form Panel */}
-        <div className="w-full lg:w-7/12 bg-white p-8 md:p-12 flex flex-col justify-center">
+            {/* Form */}
+            <form className="space-y-4" onSubmit={handleSubmit}>
 
-          {/* Title & Subtitle */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">{REGISTER_PAGE_TITLE}</h2>
-            <p className="text-gray-500 text-sm mt-2">{REGISTER_PAGE_SUBTITLE}</p>
-          </div>
+              {/* General error message */}
+              {getFormGeneralError() && (
+                <div className="w-full bg-red-100 text-red-600 border border-red-300 rounded py-2 px-3 text-xs mb-2 text-center">
+                  {getFormGeneralError()}
+                </div>
+              )}
 
-          {/* Toggle Switch */}
-          <div className="bg-gray-100 p-1 rounded-lg flex mb-8 max-w-sm mx-auto w-full">
-            {TOGGLE_BUTTONS.map(btn => (
-              <button
-                key={btn.text}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all
-                  ${btn.active ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                onClick={() => btn.route && navigate(btn.route)}
-                disabled={btn.active}
-                type="button"
-              >
-                {btn.text}
-              </button>
-            ))}
-          </div>
-
-          {/* Form */}
-          <form className="space-y-4" onSubmit={handleSubmit}>
-
-            {/* General error message */}
-            {getFormGeneralError() && (
-              <div className="w-full bg-red-100 text-red-600 border border-red-300 rounded py-2 px-3 text-xs mb-2 text-center">
-                {getFormGeneralError()}
-              </div>
-            )}
-
-            {/* Main Fields */}
-            {FORM_FIELDS.map(field => (
-              <div key={field.key}>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  {field.label}
-                  {field.required && <span className="text-red-500"> *</span>}
-                </label>
-                <input
-                  type={field.type}
-                  name={field.key}
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  value={formData[field.key]}
-                  onChange={handleChange}
-                  className={
-                    "w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm " +
-                    (getFieldError(field.key)
-                      ? "border-red-400 focus:border-red-500"
-                      : "border-gray-300 focus:border-blue-500")
-                  }
-                  autoComplete="off"
-                />
-                {getFieldError(field.key) && (
-                  <div className="text-xs text-red-500 mt-1">{getFieldError(field.key)}</div>
-                )}
-              </div>
-            ))}
-
-            {/* Password Fields */}
-            {PASSWORD_FIELDS.map(field => (
-              <div key={field.key}>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  {field.label}
-                  {field.required && <span className="text-red-500"> *</span>}
-                </label>
-                <div className="relative">
+              {/* Main Fields */}
+              {FORM_FIELDS.map(field => (
+                <div key={field.key}>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text)", opacity: 0.8 }}>
+                    {field.label}
+                    {field.required && <span className="text-red-500"> *</span>}
+                  </label>
                   <input
-                    type={
-                      field.key === 'password'
-                        ? (showPassword ? "text" : "password")
-                        : (showConfirmPassword ? "text" : "password")
-                    }
+                    type={field.type}
                     name={field.key}
                     placeholder={field.placeholder}
                     required={field.required}
@@ -325,97 +289,106 @@ const RegisterPage = () => {
                       "w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm " +
                       (getFieldError(field.key)
                         ? "border-red-400 focus:border-red-500"
-                        : "border-gray-300 focus:border-blue-500")
+                        : "focus:border-blue-500")
                     }
+                    style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
                     autoComplete="off"
                   />
-                  <button
-                    type="button"
-                    onClick={() => field.key === "password" ? setShowPassword(v => !v) : setShowConfirmPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {(field.key === "password" ? showPassword : showConfirmPassword)
-                      ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  {getFieldError(field.key) && (
+                    <div className="text-xs text-red-500 mt-1">{getFieldError(field.key)}</div>
+                  )}
                 </div>
-                {getFieldError(field.key) && (
-                  <div className="text-xs text-red-500 mt-1">{getFieldError(field.key)}</div>
-                )}
-              </div>
-            ))}
+              ))}
 
-            {/* Role Dropdown */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Role
-              </label>
-              <div className="relative">
-                <select
-                  name="role"
-                  value={formData.role}
+              {/* Password Fields */}
+              {PASSWORD_FIELDS.map(field => (
+                <div key={field.key}>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text)", opacity: 0.8 }}>
+                    {field.label}
+                    {field.required && <span className="text-red-500"> *</span>}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={
+                        field.key === 'password'
+                          ? (showPassword ? "text" : "password")
+                          : (showConfirmPassword ? "text" : "password")
+                      }
+                      name={field.key}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      value={formData[field.key]}
+                      onChange={handleChange}
+                      className={
+                        "w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm " +
+                        (getFieldError(field.key)
+                          ? "border-red-400 focus:border-red-500"
+                          : "focus:border-blue-500")
+                      }
+                      style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
+                      autoComplete="off"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => field.key === "password" ? setShowPassword(v => !v) : setShowConfirmPassword(v => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {(field.key === "password" ? showPassword : showConfirmPassword)
+                        ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {getFieldError(field.key) && (
+                    <div className="text-xs text-red-500 mt-1">{getFieldError(field.key)}</div>
+                  )}
+                </div>
+              ))}
+
+              {/* Terms Checkbox */}
+              <div className="flex items-start mt-2">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  name="termsAccepted"
+                  checked={formData.termsAccepted}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm appearance-none cursor-pointer"
-                >
-                  {ROLE_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <ChevronDown size={14} />
-                </div>
+                  className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  style={{ borderColor: "var(--border)" }}
+                  required
+                />
+                <label htmlFor="terms" className="ml-2 text-xs leading-tight" style={{ color: "var(--text)", opacity: 0.7 }}>
+                  {TERMS_TEXT}
+                </label>
               </div>
-              {getFieldError('role') && (
-                <div className="text-xs text-red-500 mt-1">{getFieldError('role')}</div>
+              {getFieldError('termsAccepted') && (
+                <div className="text-xs text-red-500 mt-1 ml-1">{getFieldError('termsAccepted')}</div>
               )}
+
+              {/* Submit Button */}
+              <button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors shadow-md mt-4"
+                type="submit"
+                disabled={googleLoading}
+              >
+                Create Account
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t" style={{ borderColor: "var(--border)" }}></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2" style={{ backgroundColor: "var(--card)", color: "var(--text)", opacity: 0.5 }}>Or continue with</span>
+              </div>
             </div>
 
-            {/* Terms Checkbox */}
-            <div className="flex items-start mt-2">
-              <input
-                type="checkbox"
-                id="terms"
-                name="termsAccepted"
-                checked={formData.termsAccepted}
-                onChange={handleChange}
-                className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                required
-              />
-              <label htmlFor="terms" className="ml-2 text-xs text-gray-500 leading-tight">
-                {TERMS_TEXT}
-              </label>
-            </div>
-            {getFieldError('termsAccepted') && (
-              <div className="text-xs text-red-500 mt-1 ml-1">{getFieldError('termsAccepted')}</div>
+            {/* Google Button */}
+            <div id="google-button-container-register" className="w-full" />
+            {!GOOGLE_CLIENT_ID && (
+              <p className="text-xs text-center text-gray-400 mt-4">* Google signup not configured</p>
             )}
-
-            {/* Submit Button */}
-            <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors shadow-md mt-4"
-              type="submit"
-              disabled={googleLoading}
-            >
-              Create Account
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-400">Or continue with</span>
-            </div>
           </div>
-
-          {/* Google Button */}
-          <div id="google-button-container-register" className="w-full" />
-          {!GOOGLE_CLIENT_ID && (
-            <p className="text-xs text-center text-gray-400 mt-4">* Google signup not configured</p>
-          )}
-
         </div>
       </div>
     </div>
