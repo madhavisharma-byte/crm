@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Calendar, ChevronDown, ChevronRight } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 
 /* =======================
    REUSABLE COMPONENTS

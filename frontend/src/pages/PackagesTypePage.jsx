@@ -6,7 +6,7 @@ import {
     ChevronDown,
     User as UserIcon
 } from 'lucide-react';
-import Sidebar from '../components/(website)/Sidebar'; // Importing the sidebar
+import Sidebar from '../components/website/Sidebar'; // Importing the sidebar
 
 const PackagesTypePage = () => {
     // Define table headers based on the image

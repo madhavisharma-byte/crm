@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../state/AuthContext";
-import DashboardHeader from "../components/(website)/Header.jsx";
-import DashboardSidebar from "../components/(website)/Sidebar";
+import DashboardHeader from "../components/website/Header.jsx";
+import DashboardSidebar from "../components/website/Sidebar";
 import { Edit2, User2, X } from "lucide-react";
 import api from "../utils/api";
 

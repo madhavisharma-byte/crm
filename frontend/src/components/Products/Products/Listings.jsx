@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Search, Filter, Upload, Download } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 
 /* =======================
    CONSTANT DATA

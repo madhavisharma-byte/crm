@@ -1,7 +1,7 @@
 import React from 'react';
 import { Store, Wifi, WifiOff, Plus } from "lucide-react";
-import Sidebar from "../components/(website)/Sidebar";
-import Header from "../components/(website)/Header";
+import Sidebar from "../components/website/Sidebar";
+import Header from "../components/website/Header";
 import SettingsHeader from "../components/SettingsHeader";
 
 // Platform connection details as a constant (to be replaced by backend API in future)

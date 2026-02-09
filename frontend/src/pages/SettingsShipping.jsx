@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Truck, SlidersHorizontal } from "lucide-react";
-import Sidebar from "../components/(website)/Sidebar";
-import Header from "../components/(website)/Header";
+import Sidebar from "../components/website/Sidebar";
+import Header from "../components/website/Header";
 import SettingsHeader from "../components/SettingsHeader";
 
 // Hardcoded shipping providers list, for layout/demo (like Settings.jsx for marketplaces)

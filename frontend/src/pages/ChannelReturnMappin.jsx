@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Plus, Bell, ChevronDown, User, X } from 'lucide-react';
-import Sidebar from '../components/(website)/Sidebar';
+import Sidebar from '../components/website/Sidebar';
 
 const ChannelReturnMapping = () => {
     const [activeFilter, setActiveFilter] = useState('RTO');

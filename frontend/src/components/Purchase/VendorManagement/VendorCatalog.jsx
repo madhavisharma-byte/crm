@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 import { Search as SearchIcon, Filter, Download, Plus } from "lucide-react";
 import AddVendorItemModal from './AddVendorItemModal'; // Importing the Add Vendor Item Modal
 

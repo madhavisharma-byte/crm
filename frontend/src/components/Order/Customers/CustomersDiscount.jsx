@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Plus, Upload, Download } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header.jsx";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header.jsx";
 
 /* =======================
    CONSTANT DATA

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 
 /* =======================
    CONSTANT DATA

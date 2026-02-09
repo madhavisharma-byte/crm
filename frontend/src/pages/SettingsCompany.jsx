@@ -1,7 +1,7 @@
 import React from "react";
 import { Building2, UploadCloud } from "lucide-react";
-import Sidebar from "../components/(website)/Sidebar";
-import Header from "../components/(website)/Header";
+import Sidebar from "../components/website/Sidebar";
+import Header from "../components/website/Header";
 import SettingsHeader from "../components/SettingsHeader";
 
 // Company details placeholder (to be fetched/updated via backend API)

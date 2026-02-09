@@ -1,8 +1,8 @@
 
 import React, { useState } from "react";
 import { Search } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 import CreatePutawayModal from "./CreatePutawayModal";
 
 /* === TABLE HEADERS === */

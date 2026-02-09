@@ -6,8 +6,8 @@ import {
     RefreshCcw,
     Wifi
 } from "lucide-react";
-import Sidebar from "../(website)/Sidebar";
-import Header from "../(website)/Header";
+import Sidebar from "../website/Sidebar";
+import Header from "../website/Header";
 
 const STATS_DATA = [
     {

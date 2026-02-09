@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, Download, TrendingUp, Package, Users, BarChart3, IndianRupee } from 'lucide-react';
-import Sidebar from '../components/(website)/Sidebar';
-import Header from '../components/(website)/Header';
+import Sidebar from '../components/website/Sidebar';
+import Header from '../components/website/Header';
 import ReportHeader from '../components/ReportHeader';
 
 const SUMMARY_CARDS = [

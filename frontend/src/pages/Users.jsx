@@ -9,7 +9,7 @@ import {
   X,
   Trash2
 } from 'lucide-react';
-import Sidebar from '../components/(website)/Sidebar';
+import Sidebar from '../components/website/Sidebar';
 
 const UsersPage = () => {
   const [view, setView] = useState('list'); // 'list' or 'create'

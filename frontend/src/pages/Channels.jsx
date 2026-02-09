@@ -8,7 +8,7 @@ import {
     Check,
     User
 } from 'lucide-react';
-import Sidebar from '../components/(website)/Sidebar';
+import Sidebar from '../components/website/Sidebar';
 import AddChannels from './AddChannels';
 
 const ChannelsTable = ({ channels }) => (

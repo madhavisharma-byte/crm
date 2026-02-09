@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Plus, MoreVertical, Check, Truck, Loader, XCircle, Trash2, Filter, Download, Upload, AlertTriangle } from 'lucide-react';
-import Sidebar from '../components/(website)/Sidebar';
-import Header from '../components/(website)/Header';
+import Sidebar from '../components/website/Sidebar';
+import Header from '../components/website/Header';
 import AddOrder from '../components/AddSalesOrder';
 import api from '../utils/api';
 import FilterSidebar from '../components/FilterSidebar';

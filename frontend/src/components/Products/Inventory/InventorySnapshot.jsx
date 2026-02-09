@@ -1,7 +1,7 @@
 import React from "react";
 import { Filter, Upload, Download, Search } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 
 const TABLE_HEADERS = [
     "SKU Code",

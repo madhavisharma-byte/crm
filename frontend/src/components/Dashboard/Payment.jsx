@@ -1,8 +1,8 @@
 "use client";
 import React from 'react';
 import { RefreshCcw, Search } from 'lucide-react';
-import Sidebar from '../(website)/Sidebar';
-import DashboardHeader from '../(website)/Header';
+import Sidebar from '../website/Sidebar';
+import DashboardHeader from '../website/Header';
 
 // --- Data Constant ---
 const PAYMENT_WIDGETS = [

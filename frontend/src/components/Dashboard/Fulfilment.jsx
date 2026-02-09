@@ -1,7 +1,7 @@
 import React from "react";
 
-import DashboardHeader from "../(website)/Header";
-import Sidebar from "../(website)/Sidebar";
+import DashboardHeader from "../website/Header";
+import Sidebar from "../website/Sidebar";
 
 import { RefreshCcw, Search, BarChart3, Package, Layers } from 'lucide-react';
 

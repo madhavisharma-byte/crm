@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { Search, Filter, Download } from "lucide-react";
-import Sidebar from "../../(website)/Sidebar";
-import DashboardHeader from "../../(website)/Header";
+import Sidebar from "../../website/Sidebar";
+import DashboardHeader from "../../website/Header";
 
 export default function ChannelInventoryPage() {
   return (
