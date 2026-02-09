@@ -7,7 +7,7 @@ import {
     Wifi
 } from "lucide-react";
 import Sidebar from "../(website)/Sidebar";
-import Header from "../(website)/Header";
+import Header from "../(website)/header";
 
 const STATS_DATA = [
     {
