@@ -213,16 +213,17 @@ const RegisterPage = () => {
     return null;
   };
 
-  // Responsive: apply much more margin top for form on small screens
-  // --- REWRITE TO USE EFFECTIVE CSS RESPONSIVE UTILITIES AND/OR JS AS NEEDED ---
-  // We'll use useEffect and useState to dynamically set the margin top based on the screen width
+  // Responsive: apply margin top for the form depending on screen size.
+  // For this instruction, we want extra margin top on large screens.
   const [formMarginTop, setFormMarginTop] = useState('');
 
   useEffect(() => {
-    // Function to compute margin top for small screens
+    // Function to compute margin top for different breakpoints
     const updateMarginTop = () => {
       if (typeof window !== "undefined") {
-        if (window.innerWidth < 640) {
+        if (window.innerWidth >= 1024) { // Large screens (lg, 1024px and up, Tailwind default)
+          setFormMarginTop('4rem');
+        } else if (window.innerWidth < 640) {
           setFormMarginTop('12rem');
         } else if (window.innerWidth < 768) {
           setFormMarginTop('3rem');
@@ -274,7 +275,7 @@ const RegisterPage = () => {
           `}
           style={{
             backgroundColor: "var(--card)",
-            marginTop: formMarginTop // Now use state
+            marginTop: formMarginTop // Use marginTop from state, now adds margin on large screens
           }}
         >
           <div className="w-full max-w-md mx-auto">
