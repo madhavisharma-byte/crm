@@ -92,15 +92,10 @@ const RegisterPage = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value
     }));
-    if (formErrors) setFormErrors(null); // clear errors on input change
+    if (formErrors) setFormErrors(null);
   };
 
-  /** Map backend express-validator and legacy errors to fields as appropriate for UX.
-   * - Express-validator: [{msg, param, path}]
-   * - Unexpected: {message}
-   */
   const parseServerErrors = (err) => {
-    // Normalize server errors into a field map or message.
     if (err?.response?.data?.errors && Array.isArray(err.response.data.errors)) {
       const fieldMap = {};
       err.response.data.errors.forEach(e => {
@@ -121,7 +116,6 @@ const RegisterPage = () => {
     return 'Registration failed';
   };
 
-  // Validate required fields before submit, then post to backend, handle success/error
   const handleSubmit = (e) => {
     e.preventDefault();
     setFormErrors(null);
@@ -141,7 +135,6 @@ const RegisterPage = () => {
 
     (async () => {
       try {
-        // Always use fullName on payload (backend accepts either, prefers fullName)
         const payload = {
           fullName: formData.fullName,
           email: formData.email,
@@ -162,7 +155,6 @@ const RegisterPage = () => {
     })();
   };
 
-  // Load Google Sign-In script and setup
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return;
 
@@ -175,7 +167,6 @@ const RegisterPage = () => {
       script.defer = true;
       document.body.appendChild(script);
       script.onload = () => {
-        /* global google */
         if (window.google && window.google.accounts && window.google.accounts.id) {
           window.google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
@@ -210,49 +201,81 @@ const RegisterPage = () => {
     loadScript();
   }, [GOOGLE_CLIENT_ID, login, navigate]);
 
-  // Gets a field-level error message (or null), for input highlighting and error text
   const getFieldError = (field) => {
     if (!formErrors) return null;
     if (typeof formErrors === 'string') return null;
     return formErrors[field] || null;
   };
 
-  // Gets a general (form-level) error message (string), or null
   const getFormGeneralError = () => {
     if (!formErrors) return null;
     if (typeof formErrors === 'string') return formErrors;
     return null;
   };
 
+  // Responsive: apply much more margin top for form on small screens
+  // --- REWRITE TO USE EFFECTIVE CSS RESPONSIVE UTILITIES AND/OR JS AS NEEDED ---
+  // We'll use useEffect and useState to dynamically set the margin top based on the screen width
+  const [formMarginTop, setFormMarginTop] = useState('');
+
+  useEffect(() => {
+    // Function to compute margin top for small screens
+    const updateMarginTop = () => {
+      if (typeof window !== "undefined") {
+        if (window.innerWidth < 640) {
+          setFormMarginTop('12rem');
+        } else if (window.innerWidth < 768) {
+          setFormMarginTop('3rem');
+        } else {
+          setFormMarginTop('');
+        }
+      }
+    };
+    updateMarginTop();
+    window.addEventListener('resize', updateMarginTop);
+    return () => window.removeEventListener('resize', updateMarginTop);
+  }, []);
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-0 md:p-0 bg-transparent">
-      {/* Main Container: left and right split, right is register form, left is LeftPanel */}
       <div
-        className="flex flex-col md:flex-row w-full h-screen max-w-none md:max-w-screen-2xl"
+        className={
+          "flex flex-col md:flex-row w-full h-auto md:h-screen max-w-none md:max-w-screen-2xl"
+        }
         style={{ backgroundColor: "var(--card)" }}
       >
-        {/* Left Panel - 1/2 for md+; collapses above, order switches */}
+        {/* Left Panel (appears first, always on top on mobile just like login) */}
         <div
-          className="
-            md:w-1/2 w-full
-            h-60 md:h-full
-            block
+          className={`
+            w-full md:w-1/2
+            flex-shrink-0 flex-grow-0
+            min-h-[15rem] max-h-[30rem] md:min-h-0 md:max-h-none h-auto md:h-full
             order-1 md:order-none
-            "
+          `}
           style={{
-            minHeight: "15rem",
-            maxHeight: "30rem",
-            height: "auto",
-            ...(window.innerWidth >= 768 && { minHeight: "unset", maxHeight: "unset", height: "100%" })
+            ...(typeof window !== 'undefined' && window.innerWidth < 768
+              ? { minHeight: "15rem", maxHeight: "30rem", height: "auto" }
+              : { height: "100%" }),
           }}
         >
-          {/* Responsive: On mobile, show left panel at top, on desktop normal */}
           <div className="w-full h-full flex md:block items-stretch content-stretch justify-center">
             <LeftPanel />
           </div>
         </div>
-        {/* Right Panel - 1/2 for md+; below left panel on mobile */}
-        <div className="flex flex-col justify-center w-full md:w-1/2 h-full p-3 xs:p-3 sm:p-6 md:p-12" style={{ backgroundColor: "var(--card)" }}>
+        {/* Register Form */}
+        <div
+          className={`
+            w-full md:w-1/2
+            flex flex-col
+            justify-center
+            p-3 xs:p-3 sm:p-6 md:p-12
+            order-2 md:order-none
+          `}
+          style={{
+            backgroundColor: "var(--card)",
+            marginTop: formMarginTop // Now use state
+          }}
+        >
           <div className="w-full max-w-md mx-auto">
             {/* Title & Subtitle */}
             <div className="text-center mb-6">
