@@ -90,7 +90,7 @@ const AddChannel = () => {
   return (
     <div className="flex-1 bg-white flex flex-col h-screen overflow-hidden">
       {/* Breadcrumb Header */}
-      <div className="px-6 py-3 border-b border-gray-100 flex items-center text-xs text-blue-600 font-medium bg-white">
+      <div className="px-4 md:px-6 py-3 border-b border-gray-100 flex items-center text-xs text-blue-600 font-medium bg-white">
         <span
           className="cursor-pointer hover:underline"
           onClick={() => setView('selection')}
@@ -114,9 +114,9 @@ const AddChannel = () => {
 
 /* --- SUB-COMPONENT 1: SELECTION GRID --- */
 const SelectionView = ({ onSelect }) => (
-  <div className="p-8 max-w-7xl mx-auto">
-    <div className="flex justify-end mb-8">
-      <div className="relative w-64">
+  <div className="p-4 sm:p-6 md:p-8 max-w-full md:max-w-5xl lg:max-w-7xl mx-auto">
+    <div className="flex flex-col xs:flex-row xs:justify-end mb-8">
+      <div className="relative w-full xs:w-64 max-w-full">
         <input
           type="text"
           placeholder="Search Channel"
@@ -140,7 +140,17 @@ const SelectionView = ({ onSelect }) => (
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div
+          className="
+            grid
+            grid-cols-1
+            xs:grid-cols-2
+            md:grid-cols-4
+            lg:grid-cols-6
+            gap-5
+            sm:gap-6
+          "
+        >
           {cat.items.map((item) => (
             <div
               key={item.id}
@@ -165,22 +175,23 @@ const SelectionView = ({ onSelect }) => (
   </div>
 );
 
-/* --- SUB-COMPONENT 2: UPDATED CONFIGURATION FORM --- */
+/* --- UPDATED CONFIGURATION FORM --- */
 
 const ConfigurationForm = ({ channel, onBack }) => {
   const [activeTab, setActiveTab] = useState('settings');
 
   return (
-    <div className="flex h-full bg-white">
-      {/* LEFT INFO PANEL (Fixed Sidebar for Channel) */}
-      <div className="w-72 border-r border-gray-100 bg-[#f8fafc] p-6 flex flex-col gap-6">
+    <div className="flex flex-col md:flex-row h-full bg-white">
+      {/* LEFT INFO PANEL */}
+      <div className="w-full md:w-72 border-b md:border-b-0 md:border-r border-gray-100 bg-[#f8fafc] p-4 sm:p-6 flex flex-col gap-6">
         <button
           onClick={onBack}
           className="text-blue-600 flex items-center gap-2 text-sm font-medium hover:underline"
         >
           <ArrowLeft size={16} /> Back
         </button>
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-gray-200 shadow-sm">
           <div className="h-16 flex items-center justify-center mb-4">
             <img
               src={channel?.logo}
@@ -204,12 +215,12 @@ const ConfigurationForm = ({ channel, onBack }) => {
       {/* RIGHT CONTENT AREA */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Tabs Header */}
-        <div className="flex border-b border-gray-200 px-8 bg-white">
+        <div className="flex flex-wrap border-b border-gray-200 px-4 md:px-8 bg-white">
           {['Settings', 'Connectors'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
-              className={`px-8 py-4 text-sm font-semibold transition-all border-b-2 -mb-[1px] z-10 ${
+              className={`px-4 md:px-8 py-2 md:py-4 text-sm font-semibold transition-all border-b-2 -mb-[1px] z-10 ${
                 activeTab === tab.toLowerCase()
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-400 hover:text-gray-600'
@@ -220,13 +231,14 @@ const ConfigurationForm = ({ channel, onBack }) => {
           ))}
         </div>
 
-        {/* Conditional Rendering based on activeTab */}
+        {/* Conditional Rendering */}
         <div className="flex-1 overflow-hidden flex flex-col">
           {activeTab === 'settings' ? (
-            <div className="flex-1 overflow-y-auto p-8 space-y-12 bg-white custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-8 md:space-y-12 bg-white custom-scrollbar">
+
               {/* 1. GENERAL INFORMATION SECTION */}
               <FormSection title="GENERAL INFORMATION" subtitle="Follow These Instructions On How To Add Channel">
-                <div className="grid grid-cols-3 gap-x-6 gap-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-5">
                   <FormInput label="Channel Name *" value={channel?.name || "FLIPKART"} />
                   <FormInput label="Ledger Name (optional)" />
                   <FormSelect label="Billing Party (optional)" placeholder="select billing party" />
@@ -239,15 +251,68 @@ const ConfigurationForm = ({ channel, onBack }) => {
                   <FormSelect label="Enable Endless Printing On Thermal Printer (Optional)" />
                   <FormSelect label="Image Based Outbound QC at Invoicing Dock (Optional)" />
                   <FormSelect label="Image based return QC *" isRequired />
-                  {/* ... Add other settings inputs here as needed ... */}
+                  <FormSelect label="Bundle Sorting At Staging Area (Optional)" />
+                  <FormSelect label="GstEInvoicing Enabled from NIC Portal (Optional)" />
+                  <FormSelect label="Bulk Receive at Invoicing Dock (Optional)" />
+                  <FormSelect label="Single Action Invoice Label New (Optional)" />
+                  <FormSelect label="Auto Calculate Selling Price (Optional)" />
+                  <FormSelect label="Use Discount Groups In SaleOrder (Optional)" />
+                  <FormSelect label="Packslip Summary Enabled (Optional)" />
+                  <FormSelect label="Create Sale Orders On Hold (Optional)" />
+                  <FormSelect label="Batch override at invoicing dock enabled on channel (Optional)" />
+                  <FormSelect label="Invoice Adjustment Type(Optional)" />
+                  <FormSelect label="Perform Manual Inventory Allocation (Optional)" />
+                  <FormSelect label="Print Option(Optional)" />
+                  <FormSelect label="Select Printer For Label And Invoice (Optional)" />
+                  <FormSelect label="Prefetch Formula (Optional)" />
+                  <FormSelect label="Enable Enforced Bundle Sorting (EBS) at Invoicing Dock" options={['None', 'No', 'Yes']} />
+                  <FormSelect label="Enable Enforced Bundle Sorting (EBS) at Staging Dock" />
+                  <FormSelect label="Minutes To Prefetch From Order Creation (Optional)" />
+                  <FormSelect label="TCS Addition Enabled (Optional)" options={['None', 'No', 'Yes']} />
+                  <FormSelect label="Enable Sku Printing On Label (Optional)" />
+                  <FormSelect label="Prefetch Enabled (Optional)" />
+                  <FormSelect label="GstEInvoicing Enabled from NIC Portal (New) (Optional)" options={['None', 'No', 'Yes']} />
+                  <FormSelect label="Unrestricted Pool Inventory Sync Over Channel (Optional)" />
+                  <FormSelect label="Show Product Details on Label (Optional)" />
                   <FormSelect label="Selling Price Tax *" options={['Off', 'On']} isRequired />
                 </div>
               </FormSection>
 
-              <FormSection title="ORDER" subtitle="Order sync parameters" hasToggle>
-                <div className="grid grid-cols-3 gap-6">
-                  <FormSelect label="Auto Verify Orders" />
-                  <FormInput label="TAT (Hours)" value="48" />
+              {/* 2. ORDER SECTION */}
+              <FormSection
+                title="ORDER"
+                subtitle="This Section Helps Us To Configure Important Parameters For Order Sync. Connectors Will Be Set In Next Tab."
+                hasToggle
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-5">
+                  <FormSelect label="Auto Verify Orders(Optional)" options={['Yes', 'No']} />
+                  <FormInput label="Tat (Hours) (Optional)" value="48" />
+                  <FormSelect label="Notify Channel On Dispatch(Optional)" options={['yes', 'no']} />
+                  <FormSelect label="Self Invoicing (Optional)" />
+                  <FormSelect label="Calculate Discount At MRP (Optional)" />
+                  <FormSelect label="Enable Unfulfillable Item Facility Routing (Optional)" />
+                  <FormSelect label="Image Based Outbound QC at Staging/Bundling Dock (Optional)" />
+                  <FormSelect label="Auto-Picklist Creation Facilities(Optional)" />
+                </div>
+              </FormSection>
+
+              {/* 3. INVENTORY SECTION */}
+              <FormSection
+                title="INVENTORY"
+                subtitle="Once Inventory Sync Is ON, Uniware Updates Inventory On Channel Periodically"
+                hasToggle
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-5">
+                  <FormSelect label="Facility Wise Inventory (Optional)" />
+                  <FormInput label="Bundle Component Inventory Update Formula (Optional)" />
+                </div>
+              </FormSection>
+
+              {/* 4. STORE SECTION */}
+              <FormSection title="STORE">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-5">
+                  <FormInput label="Max hours for Auto hopping *" value="0" isRequired />
+                  <FormSelect label="Omni channel orders *" isRequired />
                 </div>
               </FormSection>
             </div>
@@ -256,10 +321,13 @@ const ConfigurationForm = ({ channel, onBack }) => {
           )}
         </div>
 
-        {/* Form Footer (Only show for settings or as needed) */}
+        {/* Form Footer */}
         {activeTab === 'settings' && (
-          <div className="border-t border-gray-100 p-5 flex justify-end gap-3 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
-            <button onClick={onBack} className="px-6 py-2 text-sm font-semibold text-gray-400 hover:text-gray-600 border border-gray-200 rounded-md transition-colors">
+          <div className="border-t border-gray-100 p-4 md:p-5 flex flex-col sm:flex-row justify-end gap-3 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+            <button
+              onClick={onBack}
+              className="px-6 py-2 text-sm font-semibold text-gray-400 hover:text-gray-600 border border-gray-200 rounded-md transition-colors"
+            >
               Cancel
             </button>
             <button className="px-7 py-2 text-sm font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-md shadow-blue-100 transition-all">
@@ -272,12 +340,11 @@ const ConfigurationForm = ({ channel, onBack }) => {
   );
 };
 
-
 /* --- NEW SUB-COMPONENT: CONNECTORS VIEW --- */
 const ConnectorsView = ({ channelName }) => (
   <div className="flex-1 p-0 flex flex-col bg-white overflow-hidden">
     {/* The Blue Bordered Container as per Image */}
-    <div className="flex-1 m-[-1px] border border-blue-400 p-8">
+    <div className="flex-1 m-[-1px] border border-blue-400 p-4 sm:p-8">
       <h2 className="text-xl font-bold text-gray-800 mb-1 uppercase">
         {channelName}
       </h2>
@@ -285,7 +352,7 @@ const ConnectorsView = ({ channelName }) => (
         Provide Credentials Which You Use To Log Into Seller Panel.
       </p>
 
-      <div className="flex items-center gap-10">
+      <div className="flex flex-col xs:flex-row items-start xs:items-center gap-6 xs:gap-10">
         <button className="text-sm font-semibold text-blue-600 hover:underline">
           Skip
         </button>
@@ -307,8 +374,8 @@ const ConnectorsView = ({ channelName }) => (
 const FormSection = ({ title, subtitle, children, hasToggle }) => (
   <div className="relative">
     {/* Section Header */}
-    <div className="flex items-center justify-between mb-6 border-b border-gray-50 pb-4">
-      <div className="flex gap-4">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 border-b border-gray-50 pb-4">
+      <div className="flex gap-3 md:gap-4">
         <div className="w-1.5 h-10 bg-blue-600 rounded-full shadow-sm shadow-blue-200" />
         <div>
           <h4 className="text-base font-bold text-gray-800 tracking-tight leading-none mb-1.5 uppercase">
@@ -320,7 +387,7 @@ const FormSection = ({ title, subtitle, children, hasToggle }) => (
         </div>
       </div>
       {hasToggle && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 md:gap-3 mt-4 sm:mt-0">
           <span className="text-[10px] font-bold text-gray-400">Sync(Optional)</span>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold text-gray-400">OFF</span>
@@ -334,7 +401,7 @@ const FormSection = ({ title, subtitle, children, hasToggle }) => (
       )}
     </div>
     {/* Section Content */}
-    <div className="pl-6">{children}</div>
+    <div className="pl-3 md:pl-6">{children}</div>
   </div>
 );
 

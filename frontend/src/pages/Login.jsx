@@ -94,23 +94,62 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-0 md:p-0 bg-transparent">
       <div
-        className="flex flex-col md:flex-row w-full h-screen max-w-none md:max-w-screen-2xl"
+        className={`
+          flex
+          flex-col
+          md:flex-row
+          w-full
+          h-auto
+          md:h-screen
+          max-w-none
+          md:max-w-screen-2xl
+          relative
+        `}
         style={{ backgroundColor: "var(--card)" }}
       >
         {/* Left Panel */}
-        <div className="md:w-1/2 w-full h-1/2 md:h-full">
+        <div
+          className={`
+            w-full
+            md:w-1/2
+            h-auto
+            min-h-[250px]
+            ${/* This makes the left panel cover the full viewport height on small screens */""}
+            lg:min-h-screen
+            flex
+            md:block
+            md:h-full
+            z-10
+          `}
+          style={{
+            position: 'relative',
+          }}
+        >
+          {/* On small screens, make left panel fixed and full screen with proper stacking */}
           <LeftPanel />
         </div>
 
         {/* Right Panel */}
         <div
-          className="md:w-1/2 w-full h-full flex items-center justify-center"
+          className={`
+            w-full
+            md:w-1/2
+            h-full
+            flex
+            items-center
+            justify-center
+            relative
+            bg-opacity-95
+            px-2
+            py-10
+            ${/* On mobile, add some background and spacing for readability over overlay */""}
+          `}
           style={{
             backgroundColor: "var(--card)",
             minHeight: "100vh",
           }}
         >
-          <div className="w-full max-w-md p-8 md:p-12 mx-auto flex flex-col justify-center">
+          <div className="w-full max-w-md p-6 md:p-12 mx-auto flex flex-col justify-center bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-lg md:shadow-none">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-1" style={{ color: "var(--text)" }}>
                 Welcome Back
@@ -286,6 +325,28 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
+      {/* Responsive fixes for small screens: show right panel with bg over left panel */}
+      <style>
+        {`
+          @media (max-width: 1023px) {
+            .md\\:w-1\\/2 {
+              width: 100vw !important;
+              left: 0 !important;
+            }
+            .md\\:h-full {
+              height: auto !important;
+              min-height: 0 !important;
+            }
+            .min-h-\\[250px\\] {
+              min-height: 250px !important;
+            }
+            .md\\:block { display: block !important; }
+            .lg\\:min-h-screen {
+              min-height: 100vh !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

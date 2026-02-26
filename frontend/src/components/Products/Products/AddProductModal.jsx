@@ -134,12 +134,12 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white">
       <div className="flex-1 flex flex-col">
         {/* Breadcrumb Bar */}
-        <main className="flex-1 overflow-y-auto pt-[15px] pb-24">
+        <main className="flex-1 overflow-y-auto pt-4 pb-24">
           {/* Breadcrumbs */}
-          <div className="px-8 py-4 flex items-center gap-2 text-sm border-b border-slate-200">
+          <div className="px-4 sm:px-6 md:px-8 py-4 flex items-center gap-2 text-sm border-b border-slate-200">
             <span
               className="text-slate-500 cursor-pointer font-medium"
               onClick={handleProductsClick}
@@ -152,12 +152,24 @@ export default function AddProductPage() {
             <ChevronRight size={14} className="text-slate-400" />
             <span className="text-slate-400">Add Product</span>
           </div>
-          <div className="p-8 flex flex-col gap-12 max-w-[1600px]">
+          <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-8 md:gap-10 lg:gap-12 max-w-full xl:max-w-[1600px] mx-auto">
             {FORM_SECTIONS.map((section, idx) => (
               <React.Fragment key={section.id}>
                 <section>
                   <SectionHeader title={section.title} description={section.description} />
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      sm:grid-cols-2
+                      lg:grid-cols-4
+                      gap-x-4
+                      md:gap-x-6
+                      gap-y-6
+                      md:gap-y-8
+                      w-full
+                    "
+                  >
                     {section.hasTextArea && (
                       <div className="col-span-full mb-4">
                         <label className="text-sm font-medium text-slate-700 block mb-1.5">
@@ -169,28 +181,47 @@ export default function AddProductPage() {
                         />
                       </div>
                     )}
-                    {section.fields.map((field, idx) => (
-                      <FormField key={idx} {...field} />
+                    {section.fields.map((field, idx2) => (
+                      <FormField key={idx2} {...field} />
                     ))}
                   </div>
                 </section>
                 {/* Visual Dividers */}
-                {idx < 2 && <hr className="border-slate-200" />}
+                {idx < 2 && <hr className="border-slate-200 mt-8 mb-6" />}
               </React.Fragment>
             ))}
             {/* Optionally, you can add a bundle/agreement section here if needed */}
           </div>
         </main>
         {/* Footer Actions */}
-        <footer className="fixed bottom-0 right-0 left-0 bg-slate-50 border-t border-slate-300 p-4 flex justify-end gap-4 z-20 shadow-lg">
-          <button className="px-6 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-400 hover:bg-white transition-all">
+        <footer className="
+          fixed bottom-0 right-0 left-0
+          bg-slate-50 border-t border-slate-300 p-4
+          flex flex-col gap-2
+          sm:flex-row sm:justify-end sm:gap-4
+          z-20 shadow-lg
+        ">
+          <button className="w-full sm:w-auto px-6 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-400 hover:bg-white transition-all">
             Reset
           </button>
-          <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-sm transition-all">
+          <button className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-sm transition-all">
             Save Details
           </button>
         </footer>
       </div>
+      <style>{`
+        @media (max-width: 1023px) {
+          .xl\\:max-w-\\[1600px\\] { max-width: 100vw !important; }
+        }
+        @media (max-width: 767px) {
+          .md\\:gap-x-6 { gap-left: 1rem !important; gap-right: 1rem !important; }
+          .md\\:gap-y-8 { gap-top: 1rem !important; gap-bottom: 1rem !important; }
+          .md\\:p-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
+        }
+        textarea, input, select {
+          font-size: 1rem;
+        }
+      `}</style>
     </div>
   );
 }

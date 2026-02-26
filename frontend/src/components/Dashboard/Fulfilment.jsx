@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 
 import DashboardHeader from "../website/Header";
 import Sidebar from "../website/Sidebar";
 
-import { RefreshCcw, Search, BarChart3, Package, Layers } from 'lucide-react';
+import { RefreshCcw, Search } from 'lucide-react';
 
 // --- Data Constants ---
 
@@ -105,67 +105,119 @@ const AxisGraphPlaceholder = ({ yLabel, xLabel, ticks }) => (
 // --- Main Page Component ---
 
 const DashboardFulfillment = () => {
+  // This state is for optional sidebar collapse in mobile/tablet, you can also manage via context if needed.
+  // You may want to sync this with Sidebar if you add overlay/drawer functionality.
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1">
-        {/* Header */}
-        <DashboardHeader />
-
-        {/* Page Content */}
-        <main className="p-6 lg:p-8 space-y-8 font-sans antialiased">
-          {/* 2x2 Responsive Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* Card 1: Fulfillment Empty State */}
-            <ChartContainer 
-              title="Fulfillment" 
-              legendItems={FULFILLMENT_LEGENDS}
-            >
-              <div className="w-full border border-slate-100 rounded p-10 bg-slate-50/30">
-                <EmptyDataState />
-              </div>
-            </ChartContainer>
-
-            {/* Card 2: Fulfillment Hours Chart */}
-            <ChartContainer 
-              title="Fulfillment" 
-              legendItems={FULFILLMENT_HOURS_LEGEND}
-            >
-              <AxisGraphPlaceholder 
-                yLabel="Shipping Packages" 
-                xLabel="Hours" 
-                ticks={FULFILLMENT_HOURS_TICKS} 
-              />
-            </ChartContainer>
-
-            {/* Card 3: Sale Order Flow */}
-            <ChartContainer 
-              title="Sale Order Flow" 
-              legendItems={SALE_ORDER_FLOW_LEGENDS}
-            >
-              <div className="w-full border border-slate-100 rounded p-10 bg-slate-50/30">
-                <EmptyDataState />
-              </div>
-            </ChartContainer>
-
-            {/* Card 4: Pending Sale Orders Days Chart */}
-            <ChartContainer 
-              title="0 Pending Sale Orders" 
-              legendItems={PENDING_SALE_ORDERS_LEGEND}
-            >
-              <AxisGraphPlaceholder 
-                yLabel="Sale Orders" 
-                xLabel="Days" 
-                ticks={PENDING_SALE_ORDERS_TICKS} 
-              />
-            </ChartContainer>
+    <div className="bg-[#F8FAFC] min-h-screen">
+      {/* Layout for responsiveness and fixed sidebar */}
+      <div className="flex h-screen">
+        {/* SIDEBAR - always fixed */}
+        <div className="fixed top-0 left-0 z-50 h-screen">
+          <Sidebar />
+        </div>
+        {/* MAIN CONTENT WRAPPER */}
+        <div
+          className={`
+            flex-1 flex flex-col
+            transition-all duration-300
+            relative
+            bg-[#F8FAFC]
+            min-h-screen
+            overflow-x-hidden
+            ${/* Default left margin for sidebar width, adjust for smaller screens */""}
+            ml-16
+            lg:ml-80
+          `}
+        >
+          {/* Header (fixed on mobile, allow flow on large screens) */}
+          <div className="w-full sticky top-0 z-40 bg-[#F8FAFC]">
+            <DashboardHeader />
           </div>
-        </main>
+          {/* Page Content */}
+          <main
+            className={`
+              flex-1
+              p-4
+              sm:p-6
+              lg:p-8
+              space-y-8
+              font-sans
+              antialiased
+              overflow-y-auto
+              min-h-0
+              transition-all
+              duration-300
+            `}
+            style={{
+              // Make main content scrollable if content overflows, but fix sidebar.
+              height: "calc(100vh - 0px)", // subtract header height if you make header sticky
+            }}
+          >
+            {/* Responsive Grid for charts/cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 lg:grid-cols-2 lg:gap-8">
+              {/* Card 1: Fulfillment Empty State */}
+              <ChartContainer
+                title="Fulfillment"
+                legendItems={FULFILLMENT_LEGENDS}
+              >
+                <div className="w-full border border-slate-100 rounded p-6 sm:p-8 md:p-10 bg-slate-50/30">
+                  <EmptyDataState />
+                </div>
+              </ChartContainer>
+
+              {/* Card 2: Fulfillment Hours Chart */}
+              <ChartContainer
+                title="Fulfillment"
+                legendItems={FULFILLMENT_HOURS_LEGEND}
+              >
+                <AxisGraphPlaceholder
+                  yLabel="Shipping Packages"
+                  xLabel="Hours"
+                  ticks={FULFILLMENT_HOURS_TICKS}
+                />
+              </ChartContainer>
+
+              {/* Card 3: Sale Order Flow */}
+              <ChartContainer
+                title="Sale Order Flow"
+                legendItems={SALE_ORDER_FLOW_LEGENDS}
+              >
+                <div className="w-full border border-slate-100 rounded p-6 sm:p-8 md:p-10 bg-slate-50/30">
+                  <EmptyDataState />
+                </div>
+              </ChartContainer>
+
+              {/* Card 4: Pending Sale Orders Days Chart */}
+              <ChartContainer
+                title="0 Pending Sale Orders"
+                legendItems={PENDING_SALE_ORDERS_LEGEND}
+              >
+                <AxisGraphPlaceholder
+                  yLabel="Sale Orders"
+                  xLabel="Days"
+                  ticks={PENDING_SALE_ORDERS_TICKS}
+                />
+              </ChartContainer>
+            </div>
+          </main>
+        </div>
       </div>
+      {/* Extra styling for mobile/iPad: make sidebar not cover content, and allow scroll */}
+      <style>{`
+        @media (max-width: 1023px) {
+          /* For sidebar as icon vertical rail on mobile/tablet: 64px width */
+          .ml-16 { margin-left: 4rem !important; }
+        }
+        @media (min-width: 1024px) {
+          .lg\\:ml-80 { margin-left: 20rem !important; }
+        }
+        /* Fix body and html to allow whole page scroll only on main content for backdrop scroll lock if needed */
+        html, body, #root {
+          height: 100%;
+        }
+      `}</style>
     </div>
   );
 };

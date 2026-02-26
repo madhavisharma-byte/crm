@@ -108,14 +108,45 @@ const DashboardCard = ({ title, children }) => (
 
 const PurchaseDashboard = () => {
     return (
-        <div className="flex bg-[#F1F5F9] min-h-screen font-sans antialiased">
-            <Sidebar />
+        <div className="relative min-h-screen font-sans antialiased bg-[#F1F5F9]">
+            {/* Fixed Sidebar for all screen sizes */}
+            <div className="fixed inset-y-0 left-0 z-40">
+                <Sidebar />
+            </div>
 
-            <div className="flex-1 flex flex-col min-h-screen">
+            {/* Main content wrapper with left margin (responsive to sidebar) */}
+            <div
+                className={`
+                    flex flex-col min-h-screen transition-all
+                    // Large screen: keep space as before, small screen: adapt
+                    lg:ml-80 ml-16
+                `}
+            >
                 <DashboardHeader />
 
-                <main className="flex-1 p-6 lg:p-10 space-y-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1600px] mx-auto">
+                <main
+                    className={`
+                        flex-1 p-3 xs:p-4 sm:p-6 lg:p-10 space-y-8 sm:space-y-10
+                        w-full
+                        transition-all
+                    `}
+                    style={{
+                        minHeight: 0,
+                        // extra right space for stretch in xs, mobile
+                        // overflow scrolling enabled here for mobile/tablet etc.
+                        overflow: "auto",
+                        // keep sidebar always visible by scrolling only content
+                        // sidebar is fixed, this scrolls under it
+                    }}
+                >
+                    <div
+                        className="
+                            grid grid-cols-1 
+                            lg:grid-cols-2
+                            gap-6 sm:gap-8 
+                            max-w-full lg:max-w-[1600px] mx-auto
+                        "
+                    >
                         {DASHBOARD_CARDS.map((card, index) => (
                             <DashboardCard key={index} title={card.title}>
                                 {card.showGraph ? (
@@ -127,7 +158,7 @@ const PurchaseDashboard = () => {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="h-[280px] flex items-center justify-center border border-dashed border-slate-100 rounded-lg bg-slate-50/30">
+                                    <div className="h-[220px] sm:h-[240px] md:h-[260px] lg:h-[280px] flex items-center justify-center border border-dashed border-slate-100 rounded-lg bg-slate-50/30">
                                         <EmptyDataState />
                                     </div>
                                 )}
@@ -136,6 +167,21 @@ const PurchaseDashboard = () => {
                     </div>
                 </main>
             </div>
+            {/* Responsive Styles */}
+            <style>{`
+                /* xs: mobile, sm: small tablets */
+                @media (max-width: 1024px) {
+                    /* main content should have margin-left as sidebar width for small screens */
+                    .ml-16 { margin-left: 4rem !important; }
+                }
+                @media (max-width: 640px) {
+                    .p-3 { padding: 0.75rem !important; }
+                    .xs\\:p-4 { padding: 1rem !important; }
+                }
+                @media (max-width: 390px) {
+                    .p-3, .xs\\:p-4, .sm\\:p-6, .lg\\:p-10  { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+                }
+            `}</style>
         </div>
     );
 };

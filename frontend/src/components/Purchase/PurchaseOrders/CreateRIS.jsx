@@ -82,16 +82,49 @@ export default function CreateRisPage() {
     const [deliveryDate, setDeliveryDate] = useState("");
 
     return (
-        <div className="flex min-h-screen bg-white font-sans antialiased">
+        <div
+            className="
+                relative min-h-screen bg-white font-sans antialiased w-full flex
+            "
+        >
             {/* 1. Sidebar */}
-            <Sidebar />
-
-            <div className="flex-1 flex flex-col min-w-0">
+            {/* Responsive Sidebar: fixed for desktop, icon-rail for mobile/tablet */}
+            <div
+                className="
+                    hidden lg:flex
+                    flex-shrink-0
+                    flex-col
+                    h-screen
+                    z-30
+                "
+            >
+                <Sidebar />
+            </div>
+            <div
+                className="
+                    lg:hidden
+                    fixed left-0 top-0 z-30
+                    w-16
+                    h-screen
+                    flex flex-col
+                "
+            >
+                <Sidebar />
+            </div>
+            <div
+                className="
+                    flex-1 flex flex-col min-w-0
+                    transition-all
+                    lg:pl-80 pl-16
+                    md:pl-48
+                    sm:pl-16
+                "
+            >
                 {/* 2. Global Header */}
                 <DashboardHeader />
 
                 {/* 3. Breadcrumb Header */}
-                <div className="px-6 py-3 border-b border-gray-100 bg-white">
+                <div className="px-3 sm:px-4 md:px-6 py-3 border-b border-gray-100 bg-white">
                     <div className="flex items-center gap-2 text-[14px]">
                         <span className="text-[#303e67] font-bold">Purchase Orders</span>
                         <ChevronRight size={14} className="text-gray-400" />
@@ -100,7 +133,7 @@ export default function CreateRisPage() {
                 </div>
 
                 {/* 4. Form Content */}
-                <main className="flex-1 p-8 max-w-[1600px]">
+                <main className="flex-1 px-2 sm:px-4 md:px-8 py-4 md:py-8 max-w-[1600px] mx-auto w-full">
                     <div className="space-y-12">
 
                         {/* Section 1: Basic Details */}
@@ -109,7 +142,7 @@ export default function CreateRisPage() {
                                 title="Basic Details"
                                 description="Provide Expiry Date By Which This Purchase Order Is Valid. Additionally, You Can Provide Expected Delivery Date Too."
                             />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-4 md:gap-y-6">
                                 <FormField label="Purchase Order Code" placeholder="Enter Purchase order code" isRequired />
                                 <FormField label="Type" placeholder="Enter SKU Code" isRequired />
                                 <FormField label="From Party" placeholder="Enter Product Name" isRequired />
@@ -148,7 +181,7 @@ export default function CreateRisPage() {
                                 title="Vendor Details"
                                 description="Type Name Or Code Of The Vendor"
                             />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                                 <FormField label="Vendor Name" placeholder="Select Product Type" icon={ChevronDown} isSelect isRequired />
                                 <FormField label="Agreement" placeholder="Select Vendor Agreement" icon={ChevronDown} isSelect />
                             </div>
@@ -157,6 +190,23 @@ export default function CreateRisPage() {
                     </div>
                 </main>
             </div>
+            {/* Responsive custom scrollbar and sidebar paddings */}
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e6e7ee; border-radius: 10px; }
+                .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #e6e7ee transparent; }
+                @media (max-width: 1023px) {
+                    /* When sidebar is collapsed on tablet/mobile, reserve only rail or collapsed width */
+                    .lg\\:pl-80 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 767px) {
+                    .md\\:pl-48 { padding-left: 4rem !important; }
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 640px) {
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+            `}</style>
         </div>
     );
 }

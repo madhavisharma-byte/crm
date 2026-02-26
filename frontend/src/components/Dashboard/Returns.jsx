@@ -132,27 +132,98 @@ const DashboardCard = ({ title, yLabel, xLabel, showGraph }) => (
    MAIN PAGE
 ======================= */
 
+/**
+ * Responsive returns dashboard, sidebar fixed on all screens.
+ * - Sidebar is always fixed (does not scroll with content)
+ * - On small screens, content adapts below sidebar (vertical)
+ * - On large screens, content is as before (sidebar left + content)
+ */
 const ReturnsDashboard = () => {
     return (
-        <div className="flex bg-[#F1F5F9] min-h-screen font-sans antialiased">
-            <Sidebar />
+        <div className="min-h-screen font-sans antialiased bg-[#F1F5F9]">
+            {/* Sidebar (fixed on all screens) */}
+            <div
+                className="
+                    fixed
+                    top-0
+                    left-0
+                    z-50
+                    h-screen
+                    w-16
+                    lg:w-80
+                    transition-all
+                    duration-300
+                "
+                style={{
+                    // shadow and background handled by Sidebar itself
+                    // but needed for correct stacking
+                }}
+            >
+                <Sidebar />
+            </div>
 
-            <div className="flex-1 flex flex-col min-h-screen">
-                <DashboardHeader />
+            {/* Main Content wrapper */}
+            <div
+                className="
+                    flex flex-col
+                    min-h-screen
+                    transition-all duration-300
+                    relative
+                    "
+                // Responsive padding left
+                style={{
+                    paddingLeft: '4rem', // 16 in tailwind = 4rem, default sidebar width
+                }}
+            >
+                {/* On large screens, increase the main container left padding to 20rem (w-80) */}
+                <style>
+                    {`
+                    @media (min-width: 1024px) {
+                        .main-content-padding {
+                            padding-left: 20rem !important;
+                        }
+                    }
+                    `}
+                </style>
 
-                <main className="flex-1 p-6 lg:p-10 space-y-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1600px] mx-auto">
-                        {DASHBOARD_CARDS.map((card, index) => (
-                            <DashboardCard
-                                key={index}
-                                title={card.title}
-                                yLabel={card.yLabel}
-                                xLabel={card.xLabel}
-                                showGraph={card.showGraph}
-                            />
-                        ))}
-                    </div>
-                </main>
+                {/* Trick: For easier CSS specificity, add a helper class */}
+                <div className="main-content-padding flex flex-col min-h-screen">
+                    <DashboardHeader />
+                    <main
+                        className="
+                            flex-1
+                            p-4
+                            md:p-6
+                            lg:p-10
+                            space-y-8
+                            md:space-y-10
+                            w-full
+                            max-w-[1600px]
+                            mx-auto
+                        "
+                    >
+                        <div
+                            className="
+                                grid
+                                grid-cols-1
+                                sm:grid-cols-2
+                                xl:grid-cols-2
+                                gap-6
+                                md:gap-8
+                            "
+                        >
+                            {DASHBOARD_CARDS.map((card, index) => (
+                                <DashboardCard
+                                    key={index}
+                                    title={card.title}
+                                    yLabel={card.yLabel}
+                                    xLabel={card.xLabel}
+                                    showGraph={card.showGraph}
+                                />
+                            ))}
+                        </div>
+                    </main>
+                </div>
             </div>
         </div>
     );

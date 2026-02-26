@@ -39,10 +39,11 @@ const EMPTY_STATE_IMAGE = "https://images.unsplash.com/photo-1595411425732-e69c1
 const TabButton = ({ label, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`px-4 py-1 rounded-full text-[12px] font-semibold transition-all border shrink-0 ${isActive
+        className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all border shrink-0 ${
+            isActive
                 ? "bg-[#2b6cee] text-white border-[#2b6cee]"
                 : "bg-white text-[#94a3b8] border-[#94a3b8] hover:bg-slate-50"
-            }`}
+        }`}
     >
         {label}
     </button>
@@ -50,11 +51,11 @@ const TabButton = ({ label, isActive, onClick }) => (
 
 const EmptyState = () => (
     <div className="flex flex-col items-center justify-center py-32 w-full">
-        <div className="w-32 h-32 mb-4 opacity-60 grayscale">
+        <div className="relative w-32 h-32 mb-6">
             <img
                 src={EMPTY_STATE_IMAGE}
                 alt="No data"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain opacity-60 grayscale"
             />
         </div>
         <p className="text-[14px] text-gray-900 font-medium">No records to show</p>
@@ -69,18 +70,30 @@ export default function InvoiceReportPage() {
     const [activeTab, setActiveTab] = useState("unfulfilled");
 
     return (
-        <div className="flex min-h-screen bg-white font-sans antialiased">
-            {/* 1. Sidebar Component */}
-            <Sidebar />
-
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* 2. Header Component */}
+        <div className="relative bg-[#F8FAFC] min-h-screen w-full font-sans antialiased">
+            {/* Fixed Sidebar */}
+            <div className="fixed top-0 left-0 h-screen w-auto z-30 flex">
+                <Sidebar />
+            </div>
+            {/* Responsive Content Layout */}
+            <div
+                className={`
+                    flex flex-col min-h-screen
+                    transition-all
+                    lg:pl-80 pl-16
+                    md:pl-48
+                    sm:pl-16
+                    bg-[#F8FAFC]
+                `}
+            >
                 <DashboardHeader />
 
-                {/* 3. Filter Bar */}
-                <div className="flex items-center gap-8 px-6 py-3 border-b border-gray-200">
-                    <h1 className="text-[16px] font-bold text-[#303e67]">Invoice</h1>
-                    <div className="flex items-center gap-3">
+                {/* Filter Bar */}
+                <div className="flex items-center gap-4 md:gap-8 px-4 py-3 border-b border-gray-200 bg-white">
+                    <h1 className="text-[15px] md:text-[16px] font-bold text-[#303e67] whitespace-nowrap">
+                        Invoice
+                    </h1>
+                    <div className="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar">
                         {TABS.map((tab) => (
                             <TabButton
                                 key={tab.value}
@@ -92,17 +105,17 @@ export default function InvoiceReportPage() {
                     </div>
                 </div>
 
-                {/* 4. Data Table Container */}
-                <div className="flex-1 overflow-x-auto overflow-y-auto">
+                {/* Table Area with Horizontal Scroll - No card, full height */}
+                <div className="flex-1 w-full overflow-x-auto overflow-y-auto">
                     <div className="min-w-max">
                         {/* Table Header Row */}
                         <div className="flex items-center bg-[#2b6cee26] border-b border-blue-100">
                             {COLUMNS.map((col, index) => (
                                 <div
                                     key={index}
-                                    className="px-4 py-4 text-[14px] font-semibold text-[#303d50] whitespace-nowrap"
+                                    className="px-2 sm:px-4 py-3 md:py-4 text-[13px] md:text-[14px] font-medium text-[#303d50] whitespace-nowrap"
                                     style={{
-                                        minWidth: col.length > 15 ? "180px" : "140px"
+                                        minWidth: col.length > 15 ? "180px" : "120px"
                                     }}
                                 >
                                     {col}
@@ -110,11 +123,28 @@ export default function InvoiceReportPage() {
                             ))}
                         </div>
 
-                        {/* Table Content (Empty State) */}
+                        {/* Table Body (Empty State) */}
                         <EmptyState />
                     </div>
                 </div>
             </div>
+            {/* Responsive/Custom scrollbar styles, matching Overview layout */}
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e6e7ee; border-radius: 10px; }
+                .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #e6e7ee transparent; }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                @media (max-width: 1023px) {
+                    .lg\\:pl-80 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 767px) {
+                    .md\\:pl-48 { padding-left: 4rem !important; }
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 640px) {
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+            `}</style>
         </div>
     );
 }

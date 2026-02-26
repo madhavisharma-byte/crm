@@ -13,10 +13,10 @@ import SettingsNotifications from "./pages/SettingsNotification.jsx";
 import SettingsShipping from "./pages/SettingsShipping.jsx";
 import Profile from "./pages/Profile.jsx";
 import TermsAndConditions from "./pages/TermsConditions.jsx";
-import ChannelsPage from "./pages/Channels.jsx";
-import ChannelReturnMapping from "./pages/ChannelReturnMappin.jsx";
-import UsersPage from "./pages/Users.jsx";
-import PackagesTypePage from "./pages/PackagesTypePage.jsx";
+import ChannelsPage from "./components/Settings/Channels/Channels.jsx";
+import ChannelReturnMapping from "./components/Settings/Channels/ChannelReturnMappin.jsx";
+import UsersPage from "./components/Settings/Users/Users.jsx";
+import PackagesTypePage from "./components/Settings/Layouts/PackagesTypePage.jsx";
 import DashboardOverview from "./components/Dashboard/Overview.jsx";
 import DashboardSales from "./components/Dashboard/Sales.jsx";
 import DashboardPurchase from "./components/Dashboard/Purchase.jsx";
@@ -71,6 +71,11 @@ import InventorySnapshot from "./components/Products/Inventory/InventorySnapshot
 import InventoryLedger from "./components/Products/Inventory/InventoryLedger.jsx";
 import GatepassPage from "./components/Materials/Gatepass.jsx";
 import SearchProduct from "./components/Materials/SearchProduct.jsx";
+import SearchShelfPage from "./components/Settings/Layouts/SearchShelf.jsx";
+import SearchCreatePage from "./components/Settings/Layouts/SearchCreate.jsx";
+import ServiceabilityPage from "./components/Settings/Facilities/ServiceAbility.jsx";
+import InvoiceTemplatePage from "./components/Settings/Others/Invoice.jsx";
+import ShippingProvidersWorkflow from "./components/Settings/Facilities/ShippingProvider.jsx";
 
 
 
@@ -217,10 +222,18 @@ const App = () => {
           <Route path="/settings/shipping" element={<PrivateRoute><SettingsShipping /></PrivateRoute>} />
 
           <Route path="/settings/channels" element={<PrivateRoute><ChannelsPage /></PrivateRoute>} />
-          <Route path="/settings/channelsReturn" element={<PrivateRoute><ChannelReturnMapping /></PrivateRoute>} />
+          <Route path="/settings/channels-return" element={<PrivateRoute><ChannelReturnMapping /></PrivateRoute>} />
           <Route path="/settings/users" element={<PrivateRoute><UsersPage /></PrivateRoute>} />
-          <Route path="/settings/layout/packagesTypes" element={<PrivateRoute><PackagesTypePage /></PrivateRoute>} />
+          <Route path="/settings/layout/packages-types" element={<PrivateRoute><PackagesTypePage /></PrivateRoute>} />
+          <Route path="/settings/layout/search-shelf" element={<PrivateRoute><SearchShelfPage /></PrivateRoute>} />
+          <Route path="/settings/layout/create-shelf" element={<PrivateRoute><SearchCreatePage /></PrivateRoute>} />
 
+          <Route path="/settings/facilities/service-ability" element={<PrivateRoute><ServiceabilityPage /></PrivateRoute>} />
+          <Route path="/settings/facilities/shipping-provider" element={<PrivateRoute><ShippingProvidersWorkflow /></PrivateRoute>} />
+
+          <Route path="/settings/invoice" element={<PrivateRoute><InvoiceTemplatePage /></PrivateRoute>} />
+
+         
 
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />

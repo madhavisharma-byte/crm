@@ -22,7 +22,7 @@ const LeftPanel = ({
     title,
     description,
     features,
-    passwordResetSuccess = false, // <--- Add this prop to control state
+    passwordResetSuccess = false,
 } = {}) => {
     // Determine if business hub panel style should be used
     const isBusinessHub = mode === "login" || mode === "register";
@@ -103,18 +103,13 @@ const LeftPanel = ({
     }
 
     return (
-        <div
-            className="min-h-screen flex flex-col justify-center items-start"
-            style={{
-                width: "100vw",
-                maxWidth: "100%",
-            }}
-        >
+        <div className="w-full min-h-screen flex flex-col justify-center items-start">
             <div
                 className={`
                     w-full
-                    h-screen
+                    h-auto
                     lg:w-1/2
+                    lg:h-screen
                     fixed
                     left-0
                     top-0
@@ -125,25 +120,45 @@ const LeftPanel = ({
                     bg-gradient-to-br
                     from-blue-600
                     to-blue-800
-                    p-8 md:p-12
+                    p-4 sm:p-6 md:p-8 lg:p-12
                     text-white
                     min-h-screen
+                    lg:min-h-screen
                 `}
                 style={{
                     zIndex: 10,
                 }}
             >
-                <div className="w-full max-w-xs flex flex-col items-start mx-auto">
+                <div className="w-full max-w-xs sm:max-w-sm md:max-w-md flex flex-col items-start mx-auto">
                     {content.icon}
                     {content.heading}
                     {content.description}
                     <div className="space-y-4">
-                        {content.features && content.features.map((f) => (
-                            <FeatureItem key={f} text={f} />
-                        ))}
+                        {content.features &&
+                            content.features.map((f) => (
+                                <FeatureItem key={f} text={f} />
+                            ))}
                     </div>
                 </div>
             </div>
+            {/* Only apply background overlay on small devices for better readability */}
+            <style>
+                {`
+                @media (max-width: 1023px) {
+                    .lg\\:w-1\\/2 {
+                        width: 100vw !important;
+                        left: 0 !important;
+                    }
+                    .lg\\:h-screen {
+                        height: auto !important;
+                        min-height: 100vh !important;
+                    }
+                    .fixed {
+                        position: relative !important;
+                    }
+                }
+                `}
+            </style>
         </div>
     );
 };

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronRight, Calendar, ChevronDown, Plus } from 'lucide-react';
+import React from 'react';
+import { ChevronRight, Calendar, ChevronDown } from 'lucide-react';
 
 // --- Constants ---
 const FORM_DATA_CONFIG = [
@@ -56,23 +56,27 @@ const FORM_DATA_CONFIG = [
     }
 ];
 
-// --- Sub-Components ---
 const FormField = ({ field }) => (
     <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-[13px] font-semibold text-slate-700">
             {field.label} {field.required && <span className="text-red-500">*</span>}
         </label>
         <div className="relative group">
-            <input
-                type="text"
-                placeholder={field.placeholder}
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-            {field.type === 'date' && (
-                <Calendar size={16} className="absolute right-3 top-2.5 text-slate-400" />
-            )}
-            {field.type === 'select' && (
-                <ChevronDown size={16} className="absolute right-3 top-2.5 text-slate-400" />
+            {field.type === 'select' ? (
+                <div className="relative">
+                    <select className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm appearance-none focus:ring-2 focus:ring-blue-500/20 outline-none transition-all">
+                        <option>{field.placeholder}</option>
+                    </select>
+                    <ChevronDown size={16} className="absolute right-3 top-2.5 text-slate-400 pointer-events-none" />
+                </div>
+            ) : (
+                <div className="relative">
+                    <input
+                        type={field.type === 'date' ? 'date' : 'text'}
+                        placeholder={field.placeholder}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                    />
+                </div>
             )}
         </div>
     </div>
@@ -80,87 +84,76 @@ const FormField = ({ field }) => (
 
 const SectionHeader = ({ title, desc }) => (
     <div className="border-l-4 border-blue-600 pl-4 mb-6">
-        <h3 className="text-lg font-bold text-slate-800 tracking-tight">{title}</h3>
-        <p className="text-sm text-slate-500 mt-1">{desc}</p>
+        <h3 className="text-[16px] font-bold text-slate-800 tracking-tight">{title}</h3>
+        <p className="text-[12px] text-slate-500 mt-1">{desc}</p>
     </div>
 );
 
-// --- Main Page ---
-const CreateVendor = () => {
+const CreateVendor = ({ onBack }) => {
     return (
-        <div className="flex min-h-screen bg-white">
-            <div className="flex-1 flex flex-col">
-                {/* Content Area */}
-                <main className="flex-1 overflow-y-auto pt-[55px] pb-24">
+        <div className="flex flex-col min-h-[calc(100vh-64px)] bg-white relative">
+            {/* Breadcrumbs */}
+            <div className="px-4 md:px-8 py-3 flex items-center gap-2 text-sm border-b border-slate-100 sticky top-0 bg-white z-10">
+                <span
+                    className="text-slate-500 cursor-pointer font-medium hover:text-blue-600 transition-colors"
+                    onClick={onBack}
+                >
+                    Vendors
+                </span>
+                <ChevronRight size={14} className="text-slate-400" />
+                <span className="text-slate-400">Create Vendor</span>
+            </div>
 
-                    {/* Breadcrumbs */}
-                    <div className="px-8 py-4 flex items-center gap-2 text-sm border-b border-slate-200">
-                        <span className="text-slate-500 cursor-pointer font-medium">Vendors</span>
-                        <ChevronRight size={14} className="text-slate-400" />
-                        <span className="text-slate-400">Create Vendor</span>
-                    </div>
-
-                    <div className="p-8 flex flex-col gap-12 max-w-[1600px]">
-                        {FORM_DATA_CONFIG.map((section, idx) => (
-                            <React.Fragment key={idx}>
-                                <section>
-                                    <SectionHeader title={section.sectionTitle} desc={section.description} />
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
-                                        {section.fields.map((f, i) => (
-                                            <FormField key={i} field={f} />
-                                        ))}
-                                    </div>
-                                </section>
-                                {/* Visual Dividers */}
-                                {idx < 2 && <hr className="border-slate-200" />}
-                            </React.Fragment>
-                        ))}
-
-                        {/* Vendor Agreement Section */}
-                        <section>
-                            <SectionHeader title="VENDOR AGREEMENT" desc="Add Here The Agreement Details" />
-                            <div className="border border-slate-300 rounded-lg overflow-hidden">
-                                <table className="w-full text-sm text-left border-collapse">
-                                    <thead className="bg-white border-b border-slate-300">
-                                        <tr>
-                                            {["No.", "Name", "Status", "Start Date", "End Date", "Description"].map((h) => (
-                                                <th key={h} className="px-4 py-3 font-medium text-slate-400 border-r border-slate-300 last:border-0 text-center">
-                                                    {h}
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr className="border-b border-slate-300">
-                                            <td className="px-4 py-3 border-r border-slate-300 font-bold text-slate-700 text-center">1</td>
-                                            <td className="px-4 py-3 border-r border-slate-300"></td>
-                                            <td className="px-4 py-3 border-r border-slate-300"></td>
-                                            <td className="px-4 py-3 border-r border-slate-300"></td>
-                                            <td className="px-4 py-3 border-r border-slate-300"></td>
-                                            <td className="px-4 py-3"></td>
-                                        </tr>
-                                        <tr className="cursor-pointer hover:bg-slate-50">
-                                            <td colSpan="6" className="px-4 py-3 font-bold text-slate-700 text-center">
-                                                Add Agreement
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+            <main className="flex-1 p-4 md:p-8 pb-32 max-w-[1600px] mx-auto w-full">
+                <div className="space-y-10">
+                    {FORM_DATA_CONFIG.map((section, idx) => (
+                        <section key={idx} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <SectionHeader title={section.sectionTitle} desc={section.description} />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
+                                {section.fields.map((f, i) => (
+                                    <FormField key={i} field={f} />
+                                ))}
                             </div>
                         </section>
-                    </div>
-                </main>
+                    ))}
 
-                {/* Footer Actions */}
-                <footer className="fixed bottom-0 right-0 left-0 bg-slate-50 border-t border-slate-300 p-4 flex justify-end gap-4 z-20 shadow-lg">
-                    <button className="px-6 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-400 hover:bg-white transition-all">
-                        Cancel
-                    </button>
-                    <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-sm transition-all">
-                        Add Vendor
-                    </button>
-                </footer>
-            </div>
+                    {/* Vendor Agreement Table Section */}
+                    <section className="pb-10">
+                        <SectionHeader title="VENDOR AGREEMENT" desc="Add Here The Agreement Details" />
+                        <div className="border border-slate-200 rounded-xl overflow-x-auto shadow-sm">
+                            <table className="w-full text-sm text-left min-w-[600px]">
+                                <thead className="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        {["No.", "Name", "Status", "Start Date", "End Date"].map((h) => (
+                                            <th key={h} className="px-4 py-3 font-semibold text-slate-500 text-center">{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="hover:bg-blue-50/50 cursor-pointer transition-colors">
+                                        <td colSpan="5" className="px-4 py-6 font-bold text-blue-600 text-center text-[13px]">
+                                            + Add New Agreement
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            {/* Fixed Footer Actions - Adjusted to not overlap sidebar */}
+            <footer className="fixed bottom-0 right-0 left-0 lg:left-80 pl-16 lg:pl-0 bg-white border-t border-slate-200 p-4 flex justify-end gap-3 z-30 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] transition-all duration-300">
+                <button
+                    onClick={onBack}
+                    className="px-6 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all"
+                >
+                    Cancel
+                </button>
+                <button className="px-6 py-2 bg-[#2b6cee] hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-md transition-all">
+                    Save Vendor
+                </button>
+            </footer>
         </div>
     );
 };

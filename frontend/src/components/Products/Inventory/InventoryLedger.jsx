@@ -10,7 +10,17 @@ const TABS = [
     { id: 'all', label: 'All' }
 ];
 
-const TABLE_HEADERS = ["Facility Code", "Facility Name", "Report Month", "Created By", "Created At", "Status", "Action", "Generated At", "Available (ATP)"];
+const TABLE_HEADERS = [
+    "Facility Code",
+    "Facility Name",
+    "Report Month",
+    "Created By",
+    "Created At",
+    "Status",
+    "Action",
+    "Generated At",
+    "Available (ATP)"
+];
 
 // Date range picker - Minimal, inline for simplicity (no external deps)
 function DateRangePicker({ value, onChange }) {
@@ -28,7 +38,7 @@ function DateRangePicker({ value, onChange }) {
     };
 
     return (
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-col sm:flex-row">
             <input
                 type="date"
                 value={start}
@@ -37,7 +47,8 @@ function DateRangePicker({ value, onChange }) {
                 placeholder="Start Date"
                 max={end || undefined}
             />
-            <span className="text-slate-400">to</span>
+            <span className="text-slate-400 hidden sm:inline block">to</span>
+            <span className="text-slate-400 block sm:hidden">to</span>
             <input
                 type="date"
                 value={end}
@@ -60,17 +71,17 @@ const CreateReportModal = ({ isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 mx-2">
                 {/* Modal Header */}
-                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-[#334155]">Create Ledger Report</h2>
+                <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <h2 className="text-lg sm:text-xl font-bold text-[#334155]">Create Ledger Report</h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Modal Body */}
-                <div className="p-6 space-y-5">
+                <div className="p-4 sm:p-6 space-y-5">
                     {/* Report Name Field */}
                     <div className="space-y-1.5">
                         <label className="text-[13px] font-bold text-slate-700">
@@ -93,18 +104,11 @@ const CreateReportModal = ({ isOpen, onClose }) => {
                             value={dateRange}
                             onChange={setDateRange}
                         />
-                        {/* If you want to show a textual range summary:
-                        <div className="text-xs text-slate-400 mt-1">
-                            {dateRange.start && dateRange.end
-                                ? `${dateRange.start} to ${dateRange.end}`
-                                : "Select a date range"}
-                        </div>
-                        */}
                     </div>
                 </div>
 
                 {/* Modal Footer */}
-                <div className="px-6 py-4 flex justify-end gap-3">
+                <div className="px-4 sm:px-6 py-4 flex justify-end gap-3">
                     <button
                         onClick={onClose}
                         className="px-6 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
@@ -129,53 +133,88 @@ const InventoryLedger = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-white font-sans antialiased">
-            {/* Sidebar */}
-            <Sidebar activePage="Products" />
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* Header */}
+        <div className="relative min-h-screen w-full bg-white font-sans antialiased">
+            {/* Sidebar - responsive handling */}
+            <div className="fixed top-0 left-0 h-screen w-auto z-30 flex">
+                <Sidebar activePage="Products" />
+            </div>
+
+            <div
+                className={`
+                    flex flex-col min-h-screen
+                    transition-all
+                    lg:pl-80 pl-16
+                    md:pl-48
+                    sm:pl-16
+                    bg-white
+                `}
+            >
                 <DashboardHeader />
 
-                {/* Page Toolbar */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100">
-                    <div className="flex items-center gap-6">
-                        <h1 className="text-lg font-bold text-slate-700">Inventory Ledger</h1>
-
+                {/* Responsive Sub-header & Actions */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-6 py-4 border-b border-slate-100 bg-white gap-3 md:gap-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                        <h1 className="text-base md:text-lg font-bold text-slate-700 whitespace-nowrap tracking-tight">
+                            Inventory Ledger
+                        </h1>
                         <div className="flex items-center gap-2">
                             {TABS.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${activeTab === tab.id ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 text-slate-400"
-                                        }`}
+                                    className={
+                                        `px-4 py-1.5 rounded-full text-xs font-semibold border transition-all
+                                        ${activeTab === tab.id
+                                            ? "bg-blue-600 border-blue-600 text-white"
+                                            : "border-slate-300 text-slate-400"
+                                        }`
+                                    }
                                 >
                                     {tab.label}
                                 </button>
                             ))}
                         </div>
                     </div>
-
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-semibold transition-colors"
-                    >
-                        Create Report
-                    </button>
+                    <div>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-semibold transition-colors"
+                        >
+                            Create Report
+                        </button>
+                    </div>
                 </div>
 
                 {/* Table Header Row */}
-                <div className="grid grid-cols-9 bg-[#eef4ff] px-6 py-3">
+                <div className="
+                    hidden
+                    min-w-[520px]
+                    sm:min-w-[900px]
+                    md:min-w-[1200px]
+                    lg:min-w-[1400px]
+                    border-collapse
+                    md:grid
+                    grid-cols-9
+                    bg-[#eef4ff] px-4 md:px-6 py-3
+                ">
                     {TABLE_HEADERS.map((header) => (
-                        <div key={header} className="text-[13px] font-semibold text-slate-600">{header}</div>
+                        <div key={header} className="text-[13px] font-semibold text-slate-600 truncate">{header}</div>
+                    ))}
+                </div>
+                {/* Responsive table header for mobile/small screens */}
+                <div className="grid grid-cols-2 gap-2 md:hidden bg-[#eef4ff] px-4 py-3">
+                    {TABLE_HEADERS.slice(0, 2).map((header) => (
+                        <div key={header} className="text-[13px] font-semibold text-slate-600 truncate">
+                            {header}
+                        </div>
                     ))}
                 </div>
 
                 {/* Empty State Illustration */}
-                <div className="flex-grow flex flex-col items-center justify-center py-32">
-                    <div className="w-24 h-24 bg-blue-50 rounded-lg flex items-center justify-center border-b-4 border-orange-200 mb-4">
+                <div className="flex-grow flex flex-col items-center justify-center py-12 sm:py-24 md:py-32">
+                    <div className="w-16 h-16 sm:w-24 sm:h-24 bg-blue-50 rounded-lg flex items-center justify-center border-b-4 border-orange-200 mb-4">
                         <div className="p-3 bg-white rounded shadow-sm border border-slate-100">
-                            <Search className="w-10 h-10 text-slate-300" />
+                            <Search className="w-8 h-8 sm:w-10 sm:h-10 text-slate-300" />
                         </div>
                     </div>
                     <p className="text-slate-500 font-medium text-sm">No Data to Display</p>
@@ -187,6 +226,19 @@ const InventoryLedger = () => {
                     onClose={() => setIsModalOpen(false)}
                 />
             </div>
+            {/* Responsive scrollbars & sidebar paddings */}
+            <style>{`
+                @media (max-width: 1023px) {
+                    .lg\\:pl-80 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 767px) {
+                    .md\\:pl-48 { padding-left: 4rem !important; }
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 640px) {
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+            `}</style>
         </div>
     );
 };

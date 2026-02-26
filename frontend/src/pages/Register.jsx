@@ -231,12 +231,28 @@ const RegisterPage = () => {
         className="flex flex-col md:flex-row w-full h-screen max-w-none md:max-w-screen-2xl"
         style={{ backgroundColor: "var(--card)" }}
       >
-        {/* Left Panel - 1/2 */}
-        <div className="md:w-1/2 w-full h-1/2 md:h-full">
-          <LeftPanel />
+        {/* Left Panel - 1/2 for md+; collapses above, order switches */}
+        <div
+          className="
+            md:w-1/2 w-full
+            h-60 md:h-full
+            block
+            order-1 md:order-none
+            "
+          style={{
+            minHeight: "15rem",
+            maxHeight: "30rem",
+            height: "auto",
+            ...(window.innerWidth >= 768 && { minHeight: "unset", maxHeight: "unset", height: "100%" })
+          }}
+        >
+          {/* Responsive: On mobile, show left panel at top, on desktop normal */}
+          <div className="w-full h-full flex md:block items-stretch content-stretch justify-center">
+            <LeftPanel />
+          </div>
         </div>
-        {/* Right Panel - 1/2 */}
-        <div className="flex flex-col justify-center w-full md:w-1/2 h-full p-6 md:p-12" style={{ backgroundColor: "var(--card)" }}>
+        {/* Right Panel - 1/2 for md+; below left panel on mobile */}
+        <div className="flex flex-col justify-center w-full md:w-1/2 h-full p-3 xs:p-3 sm:p-6 md:p-12" style={{ backgroundColor: "var(--card)" }}>
           <div className="w-full max-w-md mx-auto">
             {/* Title & Subtitle */}
             <div className="text-center mb-6">

@@ -45,9 +45,9 @@ const FilterTab = ({ label, isActive, onClick }) => (
     <button
         onClick={onClick}
         className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all border shrink-0 ${isActive
-                ? "bg-[#2b6cee] text-white border-[#2b6cee]"
-                : "bg-white text-[#94a3b8] border-[#94a3b8] hover:bg-slate-50"
-            }`}
+            ? "bg-[#2b6cee] text-white border-[#2b6cee]"
+            : "bg-white text-[#94a3b8] border-[#94a3b8] hover:bg-slate-50"
+        }`}
     >
         {label}
     </button>
@@ -74,20 +74,20 @@ export default function OrderItemsReport() {
     const [activeTab, setActiveTab] = useState("unfulfilled");
 
     return (
-        <div className="flex min-h-screen bg-white font-sans antialiased">
-            {/* 1. Sidebar Component */}
+        <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased">
+            {/* 1. Sidebar */}
             <Sidebar />
 
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* 2. Global Header */}
+            {/* 2. Main Content */}
+            <div className="flex flex-col flex-1 min-w-0">
                 <DashboardHeader />
 
                 {/* 3. Sub-Header (Page Title & Filter Tabs) */}
-                <div className="flex items-center gap-8 px-4 py-3 border-b border-gray-200 bg-white">
-                    <h1 className="text-[16px] font-bold text-[#303e67] whitespace-nowrap">
+                <div className="flex items-center gap-4 md:gap-8 px-4 py-3 border-b border-gray-200 bg-white">
+                    <h1 className="text-[15px] md:text-[16px] font-bold text-[#303e67] whitespace-nowrap">
                         Order Items
                     </h1>
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar">
                         {TABS.map((tab) => (
                             <FilterTab
                                 key={tab.value}
@@ -99,18 +99,20 @@ export default function OrderItemsReport() {
                     </div>
                 </div>
 
-                {/* 4. Table Area with Horizontal Scroll */}
-                <div className="flex-1 overflow-auto bg-white">
+                {/* 4. Table Area with Horizontal Scroll - No card, full height */}
+                <div className="flex-1 w-full overflow-x-auto overflow-y-auto">
                     <div className="min-w-max">
                         {/* Table Header Row */}
                         <div className="flex items-center bg-[#2b6cee26] border-b border-blue-100">
                             {COLUMNS.map((column, index) => (
                                 <div
                                     key={index}
-                                    className="px-4 py-4 text-[14px] font-medium text-[#303d50] whitespace-nowrap"
+                                    className="px-2 sm:px-4 py-3 md:py-4 text-[13px] md:text-[14px] font-medium text-[#303d50] whitespace-nowrap"
                                     style={{
-                                        // Set minimum widths for specific columns to match the UI look
-                                        minWidth: column === "Channel Created Date Time" ? "220px" : "130px"
+                                        minWidth:
+                                            column === "Channel Created Date Time"
+                                                ? "180px"
+                                                : "110px",
                                     }}
                                 >
                                     {column}
@@ -119,12 +121,17 @@ export default function OrderItemsReport() {
                         </div>
 
                         {/* Table Body (Empty State) */}
-                        <div className="relative">
-                            <EmptyState />
-                        </div>
+                        <EmptyState />
                     </div>
                 </div>
             </div>
+            {/* Styles */}
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e6e7ee; border-radius: 10px; }
+                .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #e6e7ee transparent; }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+            `}</style>
         </div>
     );
 }

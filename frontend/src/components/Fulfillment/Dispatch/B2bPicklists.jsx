@@ -40,10 +40,11 @@ const EMPTY_STATE_IMG = "https://images.unsplash.com/photo-1595411425732-e69c1ab
 const FilterPill = ({ label, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`px-4 py-1.5 rounded-full text-[13px] font-medium border transition-all whitespace-nowrap ${isActive
+        className={`px-4 py-1.5 rounded-full text-[13px] font-medium border transition-all whitespace-nowrap ${
+            isActive
                 ? "bg-[#2b6cee] text-white border-[#2b6cee] shadow-sm"
                 : "bg-white text-slate-400 border-slate-200 hover:border-blue-400 hover:text-blue-500"
-            }`}
+        }`}
     >
         {label}
     </button>
@@ -59,79 +60,109 @@ const EmptyState = () => (
 );
 
 /* =======================
-   MAIN PAGE
+   MAIN PAGE (Responsive for All Devices)
 ======================= */
 
 export default function B2BPicklistsPage() {
     const [activeTab, setActiveTab] = useState("To be Picked");
 
     return (
-        <div className="flex min-h-screen bg-white font-sans antialiased">
-            {/* 1. Sidebar Component */}
-            <Sidebar />
-
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* 2. Global Header */}
-                <DashboardHeader />
-
-                {/* 3. Sub-Header (Title & Tabs) */}
-                <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-gray-100 bg-white">
-                    <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-                        <h1 className="text-xl font-bold text-slate-800 whitespace-nowrap">B2B Picklists</h1>
-                        <div className="flex items-center gap-2">
-                            {FILTER_TABS.map((tab) => (
-                                <FilterPill
-                                    key={tab}
-                                    label={tab}
-                                    isActive={activeTab === tab}
-                                    onClick={() => setActiveTab(tab)}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-slate-300 text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
-                            <Filter size={16} />
-                            Filter
-                        </button>
-                    </div>
-                </div>
-
-                {/* 4. Table Section */}
-                <div className="flex-1 overflow-x-auto overflow-y-auto">
-                    <div className="min-w-max">
-                        {/* Table Header Row with Indentation matching image */}
-                        <div className="flex items-center bg-[#eef4ff] border-b border-blue-100">
-                            <div className="w-10 px-4 py-4 flex items-center justify-center">
-                                {/* Left margin indicator or checkbox space */}
-                                <div className="w-5 h-5 border-2 border-blue-100 rounded-full opacity-50" />
-                            </div>
-
-                            {TABLE_HEADERS.map((header, idx) => (
-                                <div
-                                    key={idx}
-                                    className="px-4 py-4 text-[14px] font-medium text-slate-600 whitespace-nowrap"
-                                    style={{
-                                        minWidth: "160px",
-                                        flex: "1"
-                                    }}
-                                >
-                                    {header}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* 5. Empty State */}
-                        <EmptyState />
-                    </div>
-                </div>
+        <div className="relative bg-white min-h-screen w-full font-sans antialiased">
+            {/* Fixed Sidebar with responsive handling */}
+            <div className="fixed top-0 left-0 h-screen w-auto z-30 flex">
+                <Sidebar />
             </div>
 
+            {/* Responsive Content Layout */}
+            <div
+                className={`
+                    flex flex-col min-h-screen
+                    transition-all
+                    lg:pl-80 pl-16
+                    md:pl-48
+                    sm:pl-16
+                    bg-white
+                `}
+            >
+                {/* Global Header */}
+                <DashboardHeader />
+
+                {/* Sub-Header (Title & Tabs) */}
+                <div className="sticky top-0 z-20 bg-white border-b border-gray-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 md:px-6 py-4">
+                        {/* Title & Tabs (scrollable) */}
+                        <div className="flex items-center gap-4 md:gap-6 min-w-0">
+                            <h1 className="text-[16px] md:text-xl font-bold text-slate-800 whitespace-nowrap hidden sm:block">
+                                B2B Picklists
+                            </h1>
+                            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+                                {FILTER_TABS.map((tab) => (
+                                    <FilterPill
+                                        key={tab}
+                                        label={tab}
+                                        isActive={activeTab === tab}
+                                        onClick={() => setActiveTab(tab)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        {/* Filter Button */}
+                        <div className="flex items-center gap-2">
+                            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-slate-300 text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+                                <Filter size={16} />
+                                <span className="hidden sm:inline">Filter</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Table Section */}
+                <main className="flex-1 p-2 sm:p-4 md:p-6 w-full max-w-[1600px] bg-white">
+                    <div className="overflow-x-auto border border-gray-100 rounded-xl shadow-sm bg-white custom-scrollbar">
+                        <div className="min-w-[1000px]">
+                            {/* Table Header Row */}
+                            <div className="flex items-center bg-[#eef4ff] border-b border-blue-100">
+                                <div className="w-10 px-4 py-4 flex items-center justify-center">
+                                    {/* Left margin indicator or checkbox space */}
+                                    <div className="w-5 h-5 border-2 border-blue-100 rounded-full opacity-50" />
+                                </div>
+                                {TABLE_HEADERS.map((header, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="px-4 py-4 text-[13px] md:text-[14px] font-medium text-slate-600 whitespace-nowrap"
+                                        style={{
+                                            minWidth: "160px",
+                                            flex: "1",
+                                        }}
+                                    >
+                                        {header}
+                                    </div>
+                                ))}
+                            </div>
+                            {/* Empty State */}
+                            <EmptyState />
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            {/* Responsive Scrollbar & Sidebar Spacing Styles */}
             <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                .custom-scrollbar::-webkit-scrollbar { height: 6px; background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e6e7ee; border-radius: 10px; }
+                @media (max-width: 1023px) {
+                    .lg\\:pl-80 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 767px) {
+                    .md\\:pl-48 { padding-left: 4rem !important; }
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 640px) {
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+            `}</style>
         </div>
     );
 }

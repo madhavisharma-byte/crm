@@ -30,7 +30,8 @@ const TABLE_HEADERS = [
     "Operations",
 ];
 
-const EMPTY_STATE_IMG = "https://images.unsplash.com/photo-1595411425732-e69c1abe2763?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080";
+const EMPTY_STATE_IMG =
+    "https://images.unsplash.com/photo-1595411425732-e69c1abe2763?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080";
 
 /* =======================
    REUSABLE COMPONENTS
@@ -40,8 +41,8 @@ const FilterPill = ({ label, isActive, onClick }) => (
     <button
         onClick={onClick}
         className={`px-4 py-1.5 rounded-full text-[13px] font-medium border transition-all whitespace-nowrap ${isActive
-                ? "bg-[#2b6cee] text-white border-[#2b6cee] shadow-sm"
-                : "bg-white text-slate-400 border-slate-200 hover:border-blue-400 hover:text-blue-500"
+            ? "bg-[#2b6cee] text-white border-[#2b6cee] shadow-sm"
+            : "bg-white text-slate-400 border-slate-200 hover:border-blue-400 hover:text-blue-500"
             }`}
     >
         {label}
@@ -58,26 +59,48 @@ const EmptyState = () => (
 );
 
 /* =======================
-   MAIN PAGE
+   MAIN PAGE (Responsive for All Devices)
 ======================= */
 
 export default function PicklistsPage() {
     const [activeTab, setActiveTab] = useState("To be Picked");
 
     return (
-        <div className="flex min-h-screen bg-white font-sans antialiased">
-            {/* 1. Sidebar Component */}
-            <Sidebar />
-
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* 2. Global Dashboard Header */}
+        <div
+            className={`
+                relative bg-white min-h-screen w-full font-sans antialiased
+                flex
+                /* Responsive sidebar handling */
+            `}
+        >
+            {/* Fixed Sidebar */}
+            <div className="fixed top-0 left-0 h-screen w-auto z-30 flex">
+                <Sidebar />
+            </div>
+            {/* Responsive Content Layout */}
+            <div
+                className={`
+                    flex flex-col min-h-screen flex-1
+                    transition-all
+                    lg:pl-80 pl-16
+                    md:pl-48
+                    sm:pl-16
+                    bg-white
+                    min-w-0
+                `}
+            >
                 <DashboardHeader />
-
-                {/* 3. Sub-Header (Title, Filters & Actions) */}
-                <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-20">
-                    <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-                        <h1 className="text-xl font-bold text-slate-800 whitespace-nowrap">Picklists</h1>
-                        <div className="flex items-center gap-2">
+                {/* Sub-header */}
+                <div
+                    className="
+                        flex flex-wrap items-center justify-between gap-4
+                        px-4 md:px-6 py-4 border-b border-gray-100 bg-white
+                        sticky top-0 z-20
+                    "
+                >
+                    <div className="flex items-center gap-3 md:gap-6 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+                        <h1 className="text-lg md:text-xl font-bold text-slate-800 whitespace-nowrap">Picklists</h1>
+                        <div className="flex items-center gap-1 md:gap-2">
                             {FILTER_TABS.map((tab) => (
                                 <FilterPill
                                     key={tab}
@@ -89,14 +112,14 @@ export default function PicklistsPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-slate-300 text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <button className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-semibold border border-slate-300 text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
                             <Filter size={16} />
-                            Filter
+                            <span className="hidden xs:inline">Filter</span>
                         </button>
-                        <button className="flex items-center gap-2 bg-[#2b6cee] px-4 py-2 rounded-lg text-white hover:bg-blue-700 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 bg-[#2b6cee] px-3 py-2 md:px-4 md:py-2 rounded-lg text-white hover:bg-blue-700 transition-all shadow-sm">
                             <Plus size={18} strokeWidth={3} />
-                            <span className="text-[14px] font-semibold">Create Manual</span>
+                            <span className="hidden xs:inline text-[14px] font-semibold">Create Manual</span>
                         </button>
                     </div>
                 </div>
@@ -107,14 +130,13 @@ export default function PicklistsPage() {
                         {/* Light Blue Table Header Row */}
                         <div className="flex items-center bg-[#eef4ff] border-b border-blue-100">
                             {/* Left Padding/Checkbox space placeholder */}
-                            <div className="w-10" />
-
+                            <div className="w-6 md:w-10" />
                             {TABLE_HEADERS.map((header, idx) => (
                                 <div
                                     key={idx}
-                                    className="px-4 py-4 text-[14px] font-medium text-slate-600 whitespace-nowrap"
+                                    className="px-2 md:px-4 py-3 md:py-4 text-[12px] md:text-[14px] font-medium text-slate-600 whitespace-nowrap"
                                     style={{
-                                        minWidth: "160px",
+                                        minWidth: "120px",
                                         flex: "1"
                                     }}
                                 >
@@ -122,7 +144,6 @@ export default function PicklistsPage() {
                                 </div>
                             ))}
                         </div>
-
                         {/* 5. Table Body / Empty State */}
                         <EmptyState />
                     </div>
@@ -130,9 +151,23 @@ export default function PicklistsPage() {
             </div>
 
             <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                @media (max-width: 1023px) {
+                    /* When sidebar is collapsed on tablet/mobile, reserve only rail or collapsed width */
+                    .lg\\:pl-80 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 767px) {
+                    .md\\:pl-48 { padding-left: 4rem !important; }
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 640px) {
+                    .sm\\:pl-16 { padding-left: 4rem !important; }
+                }
+                @media (max-width: 768px) {
+                    .min-w-max { min-width: 540px !important; }
+                }
+            `}</style>
         </div>
     );
 }

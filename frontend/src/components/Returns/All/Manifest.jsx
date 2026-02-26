@@ -24,28 +24,39 @@ export default function ReturnManifests() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-white font-sans antialiased">
-      {/* 1. Sidebar */}
-      <Sidebar activePage="Returns" />
+    <div className="relative min-h-screen bg-white font-sans antialiased w-full">
+      {/* Fixed Sidebar for large screens, collapses for small/tablet */}
+      <div className="fixed top-0 left-0 h-screen w-auto z-30 flex">
+        <Sidebar activePage="Returns" />
+      </div>
 
-      {/* 2. Main content area with layout/width/height matching ReversePickup.jsx */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Responsive MAIN CONTENT AREA: left padding for sidebar on large; collapses on mobile/tablet */}
+      <div
+        className={`
+          flex flex-col min-h-screen
+          transition-all
+          lg:pl-80 pl-16
+          md:pl-48
+          sm:pl-16
+          w-full
+        `}
+      >
         {/* Header */}
         <DashboardHeader />
 
-        {/* Sub-header: Title and Filter Tabs, Create Button */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
-          <div className="flex items-center gap-6">
-            <h1 className="text-[16px] font-bold text-[#303e67] whitespace-nowrap">
+        {/* Sub-header: Title, Filter Tabs, and Create Button - responsive stack for mobile */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-6 py-4 border-b border-gray-100 bg-white gap-3 md:gap-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+            <h1 className="text-base md:text-[16px] font-bold text-[#303e67] whitespace-nowrap">
               Return Manifests
             </h1>
-            {/* Filter Tabs - matches style in ReversePickup.jsx */}
-            <div className="flex gap-3">
+            {/* Filter Tabs - Responsive */}
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
               {FILTER_TABS.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                  className={`px-4 sm:px-5 py-1 sm:py-1.5 rounded-full text-xs font-semibold transition-all border ${
                     activeTab === tab
                       ? "bg-[#2b6cee] text-white border-[#2b6cee]"
                       : "text-gray-400 border-gray-300 hover:border-gray-400"
@@ -58,16 +69,17 @@ export default function ReturnManifests() {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#2b6cee] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#1e5bc7] transition-all shadow-sm"
+            className="bg-[#2b6cee] text-white px-6 py-2.5 md:px-5 md:py-2 rounded-lg text-sm font-semibold hover:bg-[#1e5bc7] transition-all shadow-sm"
           >
             Create Return Manifest
           </button>
         </div>
 
-        {/* Table Area: matches width/height as ReversePickup.jsx */}
-        <main className="flex-1 p-8 max-w-[1600px]">
+        {/* Table Area: Responsive (padding and table scroll) */}
+        <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-full xl:max-w-[1600px] w-full">
           <div className="overflow-x-auto">
-            <table className="w-full text-left min-w-[1000px]">
+            {/* Use min-w on table for horizontal scroll on mobile */}
+            <table className="w-full text-left min-w-[800px] md:min-w-[1000px]">
               <thead>
                 <tr className="bg-[#e9f0fe]">
                   {TABLE_COLUMNS.map((header, idx) => (
@@ -109,6 +121,20 @@ export default function ReturnManifests() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+
+      {/* Responsive styling helper */}
+      <style>{`
+        @media (max-width: 1023px) {
+          .lg\\:pl-80 { padding-left: 4rem !important; }
+        }
+        @media (max-width: 767px) {
+          .md\\:pl-48 { padding-left: 4rem !important; }
+          .sm\\:pl-16 { padding-left: 4rem !important; }
+        }
+        @media (max-width: 640px) {
+          .sm\\:pl-16 { padding-left: 4rem !important; }
+        }
+      `}</style>
     </div>
   );
 }
