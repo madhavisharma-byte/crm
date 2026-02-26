@@ -223,7 +223,7 @@ const RegisterPage = () => {
     const updateMarginTop = () => {
       if (typeof window !== "undefined") {
         if (window.innerWidth < 640) {
-          setFormMarginTop('14rem');
+          setFormMarginTop('12rem');
         } else if (window.innerWidth < 768) {
           setFormMarginTop('3rem');
         } else {
@@ -251,6 +251,7 @@ const RegisterPage = () => {
             flex-shrink-0 flex-grow-0
             min-h-[15rem] max-h-[30rem] md:min-h-0 md:max-h-none h-auto md:h-full
             order-1 md:order-none
+            mb-6 md:mb-0
           `}
           style={{
             ...(typeof window !== 'undefined' && window.innerWidth < 768
